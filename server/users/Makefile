@@ -1,0 +1,31 @@
+.PHONY: run
+run:
+	go run ./cmd/
+
+.PHONY: db/migrations/new
+db/migrations/new:
+	@echo 'Creating migration files for ${name}...'
+	migrate create -seq -ext=.sql -dir=./migrations ${name}
+
+.PHONY: db/migrations/up
+db/migrations/up:
+	@echo 'Running up migrations...'
+	migrate -path ./migrations -database ${dsn} up
+
+.PHONY: audit
+audit:
+	@echo 'Formatting code...'
+	go fmt ./...
+	@echo 'Vetting code...'
+	go vet ./...
+	@echo 'Tidying and verifying module dependencies...'
+	go mod tidy
+	go mod verify
+	@echo 'Running tests...'
+	go test -vet=off ./...
+
+.PHONY: build/api
+build/api:
+	@echo 'Building cmd/api...'
+	go build -ldflags='-s' -o=./bin/api ./cmd/
+	GOOS=linux GOARCH=amd64 go build -ldflags='-s' -o=./bin/linux_amd64/ ./cmd/

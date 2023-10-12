@@ -3,11 +3,16 @@ package main
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"log/slog"
+	"nearby/services/users/data"
 	"os"
 	"time"
 
 	"github.com/caarlos0/env/v9"
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
@@ -21,6 +26,7 @@ type config struct {
 type application struct {
 	config config
 	logger slog.Logger
+	models data.Models
 }
 
 func main() {
@@ -43,9 +49,16 @@ func main() {
 
 	defer db.Close()
 
+	err = migrateDB(db)
+	if err != nil {
+		log.Error("Error running database migrations", "error", err)
+		return
+	}
+
 	app := &application{
 		config: *cfg,
 		logger: *log,
+		models: data.NewModels(db),
 	}
 
 	err = app.serve()
@@ -86,4 +99,23 @@ func connectDB(dsn string) (*sql.DB, error) {
 	}
 
 	return db, nil
+}
+
+func migrateDB(db *sql.DB) error {
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
+	if err != nil {
+		return err
+	}
+
+	m, err := migrate.NewWithDatabaseInstance("file://./migrations", "postgres", driver)
+	if err != nil {
+		return err
+	}
+
+	err = m.Up()
+	if errors.Is(err, migrate.ErrNoChange) {
+		return nil
+	} else {
+		return err
+	}
 }

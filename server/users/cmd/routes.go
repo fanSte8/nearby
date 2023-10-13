@@ -6,10 +6,10 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (app application) routes() http.Handler {
+func (app *application) routes() http.Handler {
 	router := httprouter.New()
 
-	router.HandlerFunc(http.MethodGet, "/hello-world", app.helloWorldHandler)
+	router.HandlerFunc(http.MethodPost, "/", app.handler)
 
 	return router
 }

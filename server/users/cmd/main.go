@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"log/slog"
-	"nearby/services/users/data"
+	"nearby/users/data"
 	"os"
 	"time"
 

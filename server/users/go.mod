@@ -1,4 +1,4 @@
-module nearby/services/users
+module nearby/users
 
 go 1.21.2
 

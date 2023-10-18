@@ -24,8 +24,8 @@ audit:
 	@echo 'Running tests...'
 	go test -vet=off ./...
 
-.PHONY: build/api
-build/api:
-	@echo 'Building cmd/api...'
-	go build -ldflags='-s' -o=./bin/api ./cmd/
+.PHONY: build
+build:
+	@echo 'Building...'
+	go build -ldflags='-s' -o=./bin ./cmd/
 	GOOS=linux GOARCH=amd64 go build -ldflags='-s' -o=./bin/linux_amd64/ ./cmd/

@@ -1,4 +1,4 @@
-package main
+package jsonutils
 
 import (
 	"encoding/json"
@@ -8,9 +8,7 @@ import (
 	"net/http"
 )
 
-func (app *application) writeJSON(w http.ResponseWriter, status int, data interface{}, headers http.Header) error {
-	app.logger.Info("Sending response", "data", data)
-
+func WriteJSON(w http.ResponseWriter, status int, data interface{}, headers http.Header) error {
 	w.Header().Set("Content-Type", "application/json")
 
 	for key, value := range headers {
@@ -28,7 +26,7 @@ func (app *application) writeJSON(w http.ResponseWriter, status int, data interf
 	return nil
 }
 
-func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst any) error {
+func ReadJSON(w http.ResponseWriter, r *http.Request, dst any) error {
 	maxBytes := 1_048_576
 	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
 
@@ -58,8 +56,6 @@ func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst any
 			return err
 		}
 	}
-
-	app.logger.Info("Received json", "data", dst)
 
 	return nil
 }

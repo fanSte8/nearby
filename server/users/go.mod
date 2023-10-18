@@ -2,6 +2,8 @@ module nearby/users
 
 go 1.21.2
 
+replace nearby/common => ../common
+
 require github.com/joho/godotenv v1.5.1
 
 require (
@@ -9,6 +11,7 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.16.2
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/lib/pq v1.10.9
+	nearby/common v0.0.0-00010101000000-000000000000
 )
 
 require (

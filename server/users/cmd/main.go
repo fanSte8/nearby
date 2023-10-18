@@ -9,6 +9,9 @@ import (
 	"os"
 	"time"
 
+	"nearby/common/httperrors"
+	"nearby/common/middleware"
+
 	"github.com/caarlos0/env/v9"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
@@ -24,9 +27,11 @@ type config struct {
 }
 
 type application struct {
-	config config
-	logger slog.Logger
-	models data.Models
+	config           config
+	logger           slog.Logger
+	models           data.Models
+	httpErrors       httperrors.HttpErrors
+	commonMiddleware middleware.CommonMiddleware
 }
 
 func main() {
@@ -55,10 +60,15 @@ func main() {
 		return
 	}
 
+	httpErrors := httperrors.NewHttpErrors(log)
+	commonMiddleware := middleware.NewCommonMiddleware(httpErrors)
+
 	app := &application{
-		config: *cfg,
-		logger: *log,
-		models: data.NewModels(db),
+		config:           *cfg,
+		logger:           *log,
+		models:           data.NewModels(db),
+		httpErrors:       httpErrors,
+		commonMiddleware: commonMiddleware,
 	}
 
 	err = app.serve()

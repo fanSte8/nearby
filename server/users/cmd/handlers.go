@@ -1,6 +1,7 @@
 package main
 
 import (
+	"nearby/common/jsonutils"
 	"net/http"
 )
 
@@ -12,11 +13,11 @@ func (app *application) handler(w http.ResponseWriter, r *http.Request) {
 		} `json:"data"`
 	}
 
-	err := app.readJSON(w, r, &input)
+	err := jsonutils.ReadJSON(w, r, &input)
 	if err != nil {
 		app.logger.Info("Error reading json", "error", err)
 		return
 	}
 
-	app.writeJSON(w, http.StatusOK, input, http.Header{})
+	jsonutils.WriteJSON(w, http.StatusOK, input, http.Header{})
 }

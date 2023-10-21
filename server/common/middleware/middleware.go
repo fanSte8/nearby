@@ -33,7 +33,7 @@ func (m CommonMiddleware) RecoverPanic(next http.Handler) http.Handler {
 	})
 }
 
-func (m CommonMiddleware) Authorize(JWTSecret string, next http.Handler) http.Handler {
+func (m CommonMiddleware) Authorize(JWTSecret string, next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authorizationHeader := r.Header.Get("authorization")
 

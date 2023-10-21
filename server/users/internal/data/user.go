@@ -176,8 +176,8 @@ func (m UserModel) GetByEmail(email string) (*User, error) {
 func (m UserModel) Update(user *User) error {
 	query := `
 	UPDATE users
-	SET first_name = $1, last_name = $2, image_url = $3, password = $4, activated = $5
-	WHERE id = $6`
+	SET first_name = $1, last_name = $2, email = $3, image_url = $4, password = $5, activated = $6, updated_at = NOW()
+	WHERE id = $7`
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -185,13 +185,14 @@ func (m UserModel) Update(user *User) error {
 	args := []any{
 		user.FirstName,
 		user.LastName,
+		user.Email,
 		user.ImageUrl,
 		user.Password.hash,
 		user.Activated,
 		user.ID,
 	}
 
-	err := m.db.QueryRowContext(ctx, query, args).Err()
+	err := m.db.QueryRowContext(ctx, query, args...).Err()
 
 	if err != nil {
 		return err

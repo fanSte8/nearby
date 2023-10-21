@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func (app *application) authorize(next http.Handler) http.Handler {
+func (app *application) authorize(next http.HandlerFunc) http.HandlerFunc {
 	fn := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userID := commoncontext.ContextGetUserID(r)
 

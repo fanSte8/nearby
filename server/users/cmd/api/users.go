@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"nearby/common/jsonutils"
 	"nearby/common/validator"
@@ -32,7 +33,7 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 
 	checkUser, err := app.models.Users.GetByEmail(input.Email)
 
-	if err != nil && err != data.ErrRecordNotFound {
+	if err != nil && errors.Is(err, data.ErrRecordNotFound) {
 		app.httpErrors.ServerErrorResponse(w, r, err)
 		return
 	}
@@ -95,13 +96,13 @@ func (app *application) loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	user, err := app.models.Users.GetByEmail(input.Email)
 	if err != nil {
-		if err == data.ErrRecordNotFound {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
 			app.httpErrors.InvalidCredentialsResponse(w, r)
-			return
-		} else {
+		default:
 			app.httpErrors.ServerErrorResponse(w, r, err)
-			return
 		}
+		return
 	}
 
 	match, err := user.Password.Matches(input.Password)
@@ -128,6 +129,45 @@ func (app *application) loginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = jsonutils.WriteJSON(w, http.StatusCreated, envelope{"token": string(jwtBytes)}, nil)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+}
+
+func (app *application) handleChangePassword(w http.ResponseWriter, r *http.Request) {
+	var input struct {
+		OldPassword string `json:"oldPassword"`
+		Password    string `json:"password"`
+	}
+
+	err := jsonutils.ReadJSON(w, r, &input)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	user := app.contextGetUser(r)
+
+	v := validator.New()
+
+	match, err := user.Password.Matches(input.OldPassword)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	v.Check(match, "oldPassword", "Incorrect password")
+	data.ValidatePassword(v, input.Password)
+
+	if !v.Valid() {
+		app.httpErrors.FailedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	user.Password.Set(input.Password)
+
+	err = app.models.Users.Update(user)
 	if err != nil {
 		app.httpErrors.ServerErrorResponse(w, r, err)
 		return

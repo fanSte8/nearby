@@ -42,6 +42,10 @@ func (errors HttpErrors) BadRequestResponse(w http.ResponseWriter, r *http.Reque
 	errors.errorResponse(w, r, http.StatusBadRequest, err.Error())
 }
 
+func (errors HttpErrors) FailedValidationResponse(w http.ResponseWriter, r *http.Request, err map[string]string) {
+	errors.errorResponse(w, r, http.StatusBadRequest, err)
+}
+
 func (errors HttpErrors) InvalidCredentialsResponse(w http.ResponseWriter, r *http.Request) {
 	message := "invalid authentication credentials"
 	errors.errorResponse(w, r, http.StatusUnauthorized, message)

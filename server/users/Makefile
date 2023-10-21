@@ -1,6 +1,6 @@
 .PHONY: run
 run:
-	go run ./cmd/
+	go run ./cmd/api/
 
 .PHONY: db/migrations/new
 db/migrations/new:
@@ -27,5 +27,5 @@ audit:
 .PHONY: build
 build:
 	@echo 'Building...'
-	go build -ldflags='-s' -o=./bin ./cmd/
-	GOOS=linux GOARCH=amd64 go build -ldflags='-s' -o=./bin/linux_amd64/ ./cmd/
+	go build -ldflags='-s' -o=./bin ./cmd/api
+	GOOS=linux GOARCH=amd64 go build -ldflags='-s' -o=./bin/linux_amd64/ ./cmd/api

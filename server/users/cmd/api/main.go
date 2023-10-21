@@ -5,12 +5,12 @@ import (
 	"database/sql"
 	"errors"
 	"log/slog"
-	"nearby/users/data"
 	"os"
 	"time"
 
 	"nearby/common/httperrors"
 	"nearby/common/middleware"
+	"nearby/users/internal/data"
 
 	"github.com/caarlos0/env/v9"
 	"github.com/golang-migrate/migrate/v4"
@@ -24,6 +24,7 @@ type config struct {
 	Environment string `env:"ENVIRONMENT" envDefault:"development"`
 	Port        int    `env:"PORT" envDefault:"3000"`
 	Dsn         string `env:"DSN"`
+	JWTSecret   string `env:"JWT_SECRET"`
 }
 
 type application struct {
@@ -36,8 +37,7 @@ type application struct {
 
 func main() {
 	log := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-		AddSource: true,
-		Level:     slog.LevelInfo,
+		Level: slog.LevelInfo,
 	}))
 
 	cfg, err := newConfig()
@@ -76,6 +76,7 @@ func main() {
 		log.Error("Error starting server", "error", err)
 		return
 	}
+
 }
 
 func newConfig() (*config, error) {

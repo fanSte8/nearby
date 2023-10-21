@@ -11,7 +11,8 @@ func (app *application) routes() http.Handler {
 
 	router.NotFound = http.HandlerFunc(app.httpErrors.NotFoundResponse)
 
-	router.HandlerFunc(http.MethodPost, "/", app.handler)
+	router.HandlerFunc(http.MethodPost, "/v1/user/register", app.registerUserHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/user/login", app.loginHandler)
 
 	return app.commonMiddleware.RecoverPanic(router)
 }

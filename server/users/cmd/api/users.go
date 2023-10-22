@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"nearby/common/jsonutils"
 	"nearby/common/validator"
 	"nearby/users/internal/data"
@@ -33,7 +32,7 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 
 	checkUser, err := app.models.Users.GetByEmail(input.Email)
 
-	if err != nil && errors.Is(err, data.ErrRecordNotFound) {
+	if err != nil && !errors.Is(err, data.ErrRecordNotFound) {
 		app.httpErrors.ServerErrorResponse(w, r, err)
 		return
 	}
@@ -64,9 +63,16 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	fmt.Println(user)
+	token, err := app.models.Tokens.New(user.ID, 10*time.Minute, data.ActivationToken, 8)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
 
-	err = jsonutils.WriteJSON(w, http.StatusCreated, envelope{"user": user}, http.Header{})
+	// TODO: Send activation token in an email
+	app.logger.Info("Created activation token", "token", token.Text)
+
+	err = jsonutils.WriteJSON(w, http.StatusCreated, envelope{"user": user}, nil)
 	if err != nil {
 		app.httpErrors.ServerErrorResponse(w, r, err)
 		return
@@ -168,6 +174,188 @@ func (app *application) handleChangePassword(w http.ResponseWriter, r *http.Requ
 	user.Password.Set(input.Password)
 
 	err = app.models.Users.Update(user)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	err = jsonutils.WriteJSON(w, http.StatusOK, envelope{"message": "Password updated"}, nil)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+}
+
+func (app *application) handleNewActivationToken(w http.ResponseWriter, r *http.Request) {
+	user := app.contextGetUser(r)
+
+	token, err := app.models.Tokens.New(user.ID, 10*time.Minute, data.ActivationToken, 8)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	// TODO: Send activation token in an email
+	app.logger.Info("Created activation token", "token", token.Text)
+
+	err = jsonutils.WriteJSON(w, http.StatusOK, envelope{"message": "New activation token sent"}, nil)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+}
+
+func (app *application) handleActivateAccount(w http.ResponseWriter, r *http.Request) {
+	var input struct {
+		Token string `json:"token"`
+	}
+
+	err := jsonutils.ReadJSON(w, r, &input)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	v := validator.New()
+
+	v.Check(input.Token != "", "token", "Must be provided")
+	if !v.Valid() {
+		app.httpErrors.FailedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	user := app.contextGetUser(r)
+
+	tokenUser, tokenId, err := app.models.Users.GetByToken(data.ActivationToken, input.Token)
+	if err != nil || user.ID != tokenUser.ID {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound) || user.ID != tokenUser.ID:
+			v.AddError("token", "Incorrect or expired token")
+			app.httpErrors.FailedValidationResponse(w, r, v.Errors)
+		default:
+			app.httpErrors.ServerErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	user.Activated = true
+
+	err = app.models.Users.Update(user)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	err = app.models.Tokens.MarkUsed(tokenId)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	err = jsonutils.WriteJSON(w, http.StatusOK, envelope{"message": "Acount activated"}, nil)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+}
+
+func (app *application) handleForgottenPassword(w http.ResponseWriter, r *http.Request) {
+	var input struct {
+		Email string `json:"email"`
+	}
+
+	err := jsonutils.ReadJSON(w, r, &input)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	v := validator.New()
+	data.ValidateEmail(v, input.Email)
+
+	if !v.Valid() {
+		app.httpErrors.FailedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	user, err := app.models.Users.GetByEmail(input.Email)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.httpErrors.NotFoundResponse(w, r)
+		default:
+			app.httpErrors.ServerErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	token, err := app.models.Tokens.New(user.ID, 10*time.Minute, data.PasswordResetToken, 8)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	// TODO: Send activation token in an email
+	app.logger.Info("Created password reset token", "token", token.Text)
+
+	err = jsonutils.WriteJSON(w, http.StatusOK, envelope{"message": "Password reset token sent"}, nil)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+}
+
+func (app *application) handleResetPassword(w http.ResponseWriter, r *http.Request) {
+	var input struct {
+		Token    string `json:"token"`
+		Password string `json:"password"`
+	}
+
+	err := jsonutils.ReadJSON(w, r, &input)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	v := validator.New()
+	data.ValidatePassword(v, input.Password)
+
+	if !v.Valid() {
+		app.httpErrors.FailedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	user, tokenId, err := app.models.Users.GetByToken(data.PasswordResetToken, input.Token)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			v.AddError("token", "Incorrect or expired token")
+			app.httpErrors.FailedValidationResponse(w, r, v.Errors)
+		default:
+			app.httpErrors.ServerErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	err = user.Password.Set(input.Password)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	err = app.models.Users.Update(user)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	err = app.models.Tokens.MarkUsed(tokenId)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	err = jsonutils.WriteJSON(w, http.StatusOK, envelope{"message": "Password upadted"}, nil)
 	if err != nil {
 		app.httpErrors.ServerErrorResponse(w, r, err)
 		return

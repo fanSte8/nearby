@@ -14,7 +14,7 @@ import (
 
 type envelope = map[string]any
 
-func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) handleRegisterUser(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		FirstName string `json:"firstName"`
 		LastName  string `json:"lastName"`
@@ -69,8 +69,12 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	// TODO: Send activation token in an email
-	app.logger.Info("Created activation token", "token", token.Text)
+	go func() {
+		err = app.mailerClient.SendActivationTokenMail(user.Email, token.Text)
+		if err != nil {
+			app.logger.Error("Error sending email", "error", err)
+		}
+	}()
 
 	err = jsonutils.WriteJSON(w, http.StatusCreated, envelope{"user": user}, nil)
 	if err != nil {
@@ -79,7 +83,7 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 	}
 }
 
-func (app *application) loginHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) handleLogin(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
@@ -194,9 +198,12 @@ func (app *application) handleNewActivationToken(w http.ResponseWriter, r *http.
 		app.httpErrors.ServerErrorResponse(w, r, err)
 		return
 	}
-
-	// TODO: Send activation token in an email
-	app.logger.Info("Created activation token", "token", token.Text)
+	go func() {
+		err = app.mailerClient.SendActivationTokenMail(user.Email, token.Text)
+		if err != nil {
+			app.logger.Error("Error sending email", "error", err)
+		}
+	}()
 
 	err = jsonutils.WriteJSON(w, http.StatusOK, envelope{"message": "New activation token sent"}, nil)
 	if err != nil {
@@ -295,8 +302,12 @@ func (app *application) handleForgottenPassword(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	// TODO: Send activation token in an email
-	app.logger.Info("Created password reset token", "token", token.Text)
+	go func() {
+		err = app.mailerClient.SendPasswordResetTokenMail(user.Email, token.Text)
+		if err != nil {
+			app.logger.Error("Error sending email", "error", err)
+		}
+	}()
 
 	err = jsonutils.WriteJSON(w, http.StatusOK, envelope{"message": "Password reset token sent"}, nil)
 	if err != nil {

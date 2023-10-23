@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	"nearby/common/clients"
 	"nearby/common/httperrors"
 	"nearby/common/middleware"
 	"nearby/users/internal/data"
@@ -21,10 +22,11 @@ import (
 )
 
 type config struct {
-	Environment string `env:"ENVIRONMENT" envDefault:"development"`
-	Port        int    `env:"PORT" envDefault:"3000"`
-	Dsn         string `env:"DSN"`
-	JWTSecret   string `env:"JWT_SECRET"`
+	Environment     string `env:"ENVIRONMENT" envDefault:"development"`
+	Port            int    `env:"PORT" envDefault:"3000"`
+	Dsn             string `env:"DSN"`
+	JWTSecret       string `env:"JWT_SECRET"`
+	MailerClientUrl string `env:"MAILER_SERVICE"`
 }
 
 type application struct {
@@ -33,6 +35,7 @@ type application struct {
 	models           data.Models
 	httpErrors       httperrors.HttpErrors
 	commonMiddleware middleware.CommonMiddleware
+	mailerClient     clients.MailerClient
 }
 
 func main() {
@@ -63,12 +66,18 @@ func main() {
 	httpErrors := httperrors.NewHttpErrors(log)
 	commonMiddleware := middleware.NewCommonMiddleware(httpErrors)
 
+	mailerClient, err := clients.NewMailerClient(cfg.MailerClientUrl)
+	if err != nil {
+		log.Error("Error connecting to the mailer service", "error", err)
+	}
+
 	app := &application{
 		config:           *cfg,
 		logger:           *log,
 		models:           data.NewModels(db),
 		httpErrors:       httpErrors,
 		commonMiddleware: commonMiddleware,
+		mailerClient:     *mailerClient,
 	}
 
 	err = app.serve()

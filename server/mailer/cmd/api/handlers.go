@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func (app *application) handleActivationToken(w http.ResponseWriter, r *http.Request) {
+func (app *application) handleActivationTokenMail(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		Token     string `json:"token"`
 		Recipient string `json:"recipient"`
@@ -42,7 +42,7 @@ func (app *application) handleActivationToken(w http.ResponseWriter, r *http.Req
 	}
 }
 
-func (app *application) handlePasswordResetToken(w http.ResponseWriter, r *http.Request) {
+func (app *application) handlePasswordResetTokenMail(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		Token     string `json:"token"`
 		Recipient string `json:"recipient"`

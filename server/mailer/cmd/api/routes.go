@@ -11,8 +11,8 @@ func (app *application) routes() http.Handler {
 
 	router.NotFound = http.HandlerFunc(app.httpErrors.NotFoundResponse)
 
-	router.HandlerFunc(http.MethodPost, "/v1/mailer/activation", app.handleActivationToken)
-	router.HandlerFunc(http.MethodPost, "/v1/mailer/password-reset", app.handlePasswordResetToken)
+	router.HandlerFunc(http.MethodPost, "/v1/mailer/activation", app.handleActivationTokenMail)
+	router.HandlerFunc(http.MethodPost, "/v1/mailer/password-reset", app.handlePasswordResetTokenMail)
 
 	return app.commonMiddleware.RecoverPanic(router)
 }

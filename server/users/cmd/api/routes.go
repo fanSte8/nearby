@@ -11,8 +11,8 @@ func (app *application) routes() http.Handler {
 
 	router.NotFound = http.HandlerFunc(app.httpErrors.NotFoundResponse)
 
-	router.HandlerFunc(http.MethodPost, "/v1/users/register", app.registerUserHandler)
-	router.HandlerFunc(http.MethodPost, "/v1/users/login", app.loginHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/users/register", app.handleRegisterUser)
+	router.HandlerFunc(http.MethodPost, "/v1/users/login", app.handleLogin)
 
 	router.HandlerFunc(http.MethodPost, "/v1/users/change-password", app.authorize(app.handleChangePassword))
 	router.HandlerFunc(http.MethodPost, "/v1/users/forgotten-password", app.handleForgottenPassword)

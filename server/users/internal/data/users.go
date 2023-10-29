@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"errors"
+	"fmt"
 	"nearby/common/validator"
 	"time"
 
@@ -21,6 +22,10 @@ type User struct {
 	Activated bool      `json:"activated"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+func (u User) GetProfilePictureKey() string {
+	return fmt.Sprintf("%d-profile-picture", u.ID)
 }
 
 type password struct {

@@ -9,10 +9,65 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gorilla/mux"
 	"github.com/pascaldekloe/jwt"
 )
 
 type envelope = map[string]any
+
+func (app *application) handleCurrentUserData(w http.ResponseWriter, r *http.Request) {
+	user := app.contextGetUser(r)
+
+	if user.ImageUrl != "" {
+		url, err := app.storage.GetURL(user.ImageUrl)
+		if err != nil {
+			app.logger.Error("Error getting user profile picture", "error", err)
+		} else {
+			user.ImageUrl = url
+		}
+	}
+
+	err := jsonutils.WriteJSON(w, http.StatusCreated, envelope{"user": user}, nil)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+}
+
+func (app *application) handleGetUserByID(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	id, err := strconv.ParseInt(params["id"], 10, 64)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	user, err := app.models.Users.GetById(id)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.httpErrors.NotFoundResponse(w, r)
+		default:
+			app.httpErrors.ServerErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	if user.ImageUrl != "" {
+		url, err := app.storage.GetURL(user.ImageUrl)
+		if err != nil {
+			app.logger.Error("Error getting user profile picture", "error", err)
+		} else {
+			user.ImageUrl = url
+		}
+	}
+
+	err = jsonutils.WriteJSON(w, http.StatusCreated, envelope{"user": user}, nil)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+}
 
 func (app *application) handleRegisterUser(w http.ResponseWriter, r *http.Request) {
 	var input struct {
@@ -367,6 +422,37 @@ func (app *application) handleResetPassword(w http.ResponseWriter, r *http.Reque
 	}
 
 	err = jsonutils.WriteJSON(w, http.StatusOK, envelope{"message": "Password upadted"}, nil)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+}
+
+func (app *application) handleProfilePictureUpload(w http.ResponseWriter, r *http.Request) {
+	user := app.contextGetUser(r)
+
+	profilePictureKey := user.GetProfilePictureKey()
+
+	f, _, err := r.FormFile("profile-picture")
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	err = app.storage.Save(profilePictureKey, f)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	user.ImageUrl = profilePictureKey
+	err = app.models.Users.Update(user)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	err = jsonutils.WriteJSON(w, http.StatusOK, envelope{"message": "Profile picture set"}, nil)
 	if err != nil {
 		app.httpErrors.ServerErrorResponse(w, r, err)
 		return

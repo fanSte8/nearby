@@ -458,3 +458,39 @@ func (app *application) handleProfilePictureUpload(w http.ResponseWriter, r *htt
 		return
 	}
 }
+
+func (app *application) handlePostsRadiusUpdate(w http.ResponseWriter, r *http.Request) {
+	var input struct {
+		Radius int `json:"radius"`
+	}
+
+	err := jsonutils.ReadJSON(w, r, &input)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	v := validator.New()
+	v.Check(input.Radius > 0, "radius", "Value must be greater than 0")
+
+	if !v.Valid() {
+		app.httpErrors.FailedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	user := app.contextGetUser(r)
+
+	user.PostsRadiusKm = input.Radius
+
+	err = app.models.Users.Update(user)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	err = jsonutils.WriteJSON(w, http.StatusOK, envelope{"message": "Posts radius updated"}, nil)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+}

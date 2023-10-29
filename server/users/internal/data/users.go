@@ -13,15 +13,16 @@ import (
 )
 
 type User struct {
-	ID        int64     `json:"id"`
-	FirstName string    `json:"firstName"`
-	LastName  string    `json:"lastName"`
-	ImageUrl  string    `json:"imageUrl"`
-	Email     string    `json:"email"`
-	Password  password  `json:"-"`
-	Activated bool      `json:"activated"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	ID            int64     `json:"id"`
+	FirstName     string    `json:"firstName"`
+	LastName      string    `json:"lastName"`
+	ImageUrl      string    `json:"imageUrl"`
+	Email         string    `json:"email"`
+	Password      password  `json:"-"`
+	Activated     bool      `json:"activated"`
+	PostsRadiusKm int       `json:"postsRadiusKm"`
+	CreatedAt     time.Time `json:"createdAt"`
+	UpdatedAt     time.Time `json:"updatedAt"`
 }
 
 func (u User) GetProfilePictureKey() string {
@@ -112,7 +113,7 @@ func (m UserModel) Insert(user *User) error {
 
 func (m UserModel) GetById(id int64) (*User, error) {
 	query := `
-	SELECT id, first_name, last_name, image_url, email, password, activated, created_at, updated_at
+	SELECT id, first_name, last_name, image_url, email, password, activated, posts_radius_km, created_at, updated_at
 	FROM users
 	WHERE id = $1`
 
@@ -129,6 +130,7 @@ func (m UserModel) GetById(id int64) (*User, error) {
 		&user.Email,
 		&user.Password.hash,
 		&user.Activated,
+		&user.PostsRadiusKm,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)
@@ -147,7 +149,7 @@ func (m UserModel) GetById(id int64) (*User, error) {
 
 func (m UserModel) GetByEmail(email string) (*User, error) {
 	query := `
-	SELECT id, first_name, last_name, image_url, email, password, activated, created_at, updated_at
+	SELECT id, first_name, last_name, image_url, email, password, activated, posts_radius_km, created_at, updated_at
 	FROM users
 	WHERE email = $1`
 
@@ -164,6 +166,7 @@ func (m UserModel) GetByEmail(email string) (*User, error) {
 		&user.Email,
 		&user.Password.hash,
 		&user.Activated,
+		&user.PostsRadiusKm,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)
@@ -182,8 +185,8 @@ func (m UserModel) GetByEmail(email string) (*User, error) {
 func (m UserModel) Update(user *User) error {
 	query := `
 	UPDATE users
-	SET first_name = $1, last_name = $2, email = $3, image_url = $4, password = $5, activated = $6, updated_at = NOW()
-	WHERE id = $7`
+	SET first_name = $1, last_name = $2, email = $3, image_url = $4, password = $5, activated = $6, posts_radius_km=$7, updated_at = NOW()
+	WHERE id = $8`
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -195,6 +198,7 @@ func (m UserModel) Update(user *User) error {
 		user.ImageUrl,
 		user.Password.hash,
 		user.Activated,
+		user.PostsRadiusKm,
 		user.ID,
 	}
 
@@ -209,7 +213,7 @@ func (m UserModel) Update(user *User) error {
 
 func (m UserModel) GetByToken(tokenType, tokenText string) (*User, int64, error) {
 	query := `
-        SELECT users.id, users.first_name, users.last_name, users.email, users.image_url, users.password, users.activated, users.created_at, users.updated_at, tokens.id
+        SELECT users.id, users.first_name, users.last_name, users.email, users.image_url, users.password, users.activated, user.posts_radius_km, users.created_at, users.updated_at, tokens.id
         FROM users
         INNER JOIN tokens
         ON users.id = tokens.user_id
@@ -235,6 +239,7 @@ func (m UserModel) GetByToken(tokenType, tokenText string) (*User, int64, error)
 		&user.ImageUrl,
 		&user.Password.hash,
 		&user.Activated,
+		&user.PostsRadiusKm,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 		&tokenId,

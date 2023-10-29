@@ -1,0 +1,1 @@
+ALTER TABLE users DROP COLUMN IF EXISTS posts_radius_km;

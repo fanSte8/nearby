@@ -1,0 +1,3 @@
+DROP INDEX IF EXISTS idx_location;
+
+DROP TABLE IF EXISTS posts;

@@ -3,16 +3,16 @@ package main
 import (
 	"net/http"
 
-	"github.com/julienschmidt/httprouter"
+	"github.com/gorilla/mux"
 )
 
 func (app *application) routes() http.Handler {
-	router := httprouter.New()
+	r := mux.NewRouter()
 
-	router.NotFound = http.HandlerFunc(app.httpErrors.NotFoundResponse)
+	r.NotFoundHandler = http.HandlerFunc(app.httpErrors.NotFoundResponse)
 
-	router.HandlerFunc(http.MethodPost, "/v1/mailer/activation", app.handleActivationTokenMail)
-	router.HandlerFunc(http.MethodPost, "/v1/mailer/password-reset", app.handlePasswordResetTokenMail)
+	r.Methods("POST").Path("/v1/mailer/activation").HandlerFunc(app.handleActivationTokenMail)
+	r.Methods("POST").Path("/v1/mailer/password-reset").HandlerFunc(app.handlePasswordResetTokenMail)
 
-	return app.commonMiddleware.RecoverPanic(router)
+	return app.commonMiddleware.RecoverPanic(r)
 }

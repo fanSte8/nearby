@@ -1,33 +1,18 @@
 package main
 
 import (
-	"context"
-	"database/sql"
-	"errors"
 	"log/slog"
 	"os"
-	"time"
 
 	"nearby/common/clients"
 	"nearby/common/httperrors"
 	"nearby/common/middleware"
+	"nearby/common/storage"
 	"nearby/users/internal/data"
 
-	"github.com/caarlos0/env/v9"
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
-
-type config struct {
-	Environment     string `env:"ENVIRONMENT" envDefault:"development"`
-	Port            int    `env:"PORT" envDefault:"3000"`
-	Dsn             string `env:"DSN"`
-	JWTSecret       string `env:"JWT_SECRET"`
-	MailerClientUrl string `env:"MAILER_SERVICE"`
-}
 
 type application struct {
 	config           config
@@ -36,6 +21,7 @@ type application struct {
 	httpErrors       httperrors.HttpErrors
 	commonMiddleware middleware.CommonMiddleware
 	mailerClient     clients.MailerClient
+	storage          storage.Storage
 }
 
 func main() {
@@ -71,6 +57,13 @@ func main() {
 		log.Error("Error connecting to the mailer service", "error", err)
 	}
 
+	storage := storage.NewS3Storage(storage.S3Config{
+		BucketName:      cfg.S3BucketName,
+		Region:          cfg.AWSRegion,
+		AccessKeyID:     cfg.AWSAccessKeyID,
+		AccessKeySecret: cfg.AWSAccessKeySecret,
+	})
+
 	app := &application{
 		config:           *cfg,
 		logger:           *log,
@@ -78,64 +71,12 @@ func main() {
 		httpErrors:       httpErrors,
 		commonMiddleware: commonMiddleware,
 		mailerClient:     *mailerClient,
+		storage:          storage,
 	}
 
 	err = app.serve()
 	if err != nil {
 		log.Error("Error starting server", "error", err)
 		return
-	}
-
-}
-
-func newConfig() (*config, error) {
-	err := godotenv.Load()
-	if err != nil {
-		return nil, err
-	}
-
-	cfg := &config{}
-
-	err = env.Parse(cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	return cfg, nil
-}
-
-func connectDB(dsn string) (*sql.DB, error) {
-	db, err := sql.Open("postgres", dsn)
-	if err != nil {
-		return nil, err
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	err = db.PingContext(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return db, nil
-}
-
-func migrateDB(db *sql.DB) error {
-	driver, err := postgres.WithInstance(db, &postgres.Config{})
-	if err != nil {
-		return err
-	}
-
-	m, err := migrate.NewWithDatabaseInstance("file://./migrations", "postgres", driver)
-	if err != nil {
-		return err
-	}
-
-	err = m.Up()
-	if errors.Is(err, migrate.ErrNoChange) {
-		return nil
-	} else {
-		return err
 	}
 }

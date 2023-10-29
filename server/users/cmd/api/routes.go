@@ -3,23 +3,29 @@ package main
 import (
 	"net/http"
 
-	"github.com/julienschmidt/httprouter"
+	"github.com/gorilla/mux"
 )
 
 func (app *application) routes() http.Handler {
-	router := httprouter.New()
+	r := mux.NewRouter()
 
-	router.NotFound = http.HandlerFunc(app.httpErrors.NotFoundResponse)
+	r.NotFoundHandler = http.HandlerFunc(app.httpErrors.NotFoundResponse)
 
-	router.HandlerFunc(http.MethodPost, "/v1/users/register", app.handleRegisterUser)
-	router.HandlerFunc(http.MethodPost, "/v1/users/login", app.handleLogin)
+	r.Methods("POST").Path("/v1/users/register").HandlerFunc(app.handleRegisterUser)
+	r.Methods("POST").Path("/v1/users/login").HandlerFunc(app.handleLogin)
 
-	router.HandlerFunc(http.MethodPost, "/v1/users/change-password", app.authorize(app.handleChangePassword))
-	router.HandlerFunc(http.MethodPost, "/v1/users/forgotten-password", app.handleForgottenPassword)
-	router.HandlerFunc(http.MethodPost, "/v1/users/reset-password", app.handleResetPassword)
+	r.Methods("GET").Path("/v1/users/me").HandlerFunc(app.authorize(app.handleCurrentUserData))
 
-	router.HandlerFunc(http.MethodGet, "/v1/users/activate", app.authorize(app.handleNewActivationToken))
-	router.HandlerFunc(http.MethodPost, "/v1/users/activate", app.authorize(app.handleActivateAccount))
+	r.Methods("POST").Path("/v1/users/change-password").HandlerFunc(app.authorize(app.handleChangePassword))
+	r.Methods("POST").Path("/v1/users/forgotten-password").HandlerFunc(app.handleForgottenPassword)
+	r.Methods("POST").Path("/v1/users/reset-password").HandlerFunc(app.authorize(app.handleResetPassword))
 
-	return app.commonMiddleware.RecoverPanic(router)
+	r.Methods("GET").Path("/v1/users/activate").HandlerFunc(app.authorize(app.handleNewActivationToken))
+	r.Methods("POST").Path("/v1/users/activate").HandlerFunc(app.authorize(app.authorize(app.handleActivateAccount)))
+
+	r.Methods("POST").Path("/v1/users/profile-picture").HandlerFunc(app.authorize(app.handleProfilePictureUpload))
+
+	r.Methods("GET").Path("/v1/users/{id}").HandlerFunc(app.handleGetUserByID)
+
+	return app.commonMiddleware.RecoverPanic(r)
 }

@@ -62,7 +62,7 @@ func (app *application) handleGetUserByID(w http.ResponseWriter, r *http.Request
 		}
 	}
 
-	err = jsonutils.WriteJSON(w, http.StatusCreated, envelope{"user": user}, nil)
+	err = jsonutils.WriteJSON(w, http.StatusOK, envelope{"user": user}, nil)
 	if err != nil {
 		app.httpErrors.ServerErrorResponse(w, r, err)
 		return

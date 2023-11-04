@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	"os"
 
+	"nearby/common/clients"
 	"nearby/common/httperrors"
 	"nearby/common/middleware"
 	"nearby/common/storage"
@@ -20,6 +21,7 @@ type application struct {
 	httpErrors       httperrors.HttpErrors
 	commonMiddleware middleware.CommonMiddleware
 	storage          storage.Storage
+	usersClient      clients.UsersClient
 }
 
 func main() {
@@ -57,6 +59,12 @@ func main() {
 		AccessKeySecret: cfg.AWSAccessKeySecret,
 	})
 
+	usersClient, err := clients.NewUsersClient(cfg.UsersClientUrl)
+	if err != nil {
+		log.Error("Error creating users client", "error", err)
+		return
+	}
+
 	app := &application{
 		config:           *cfg,
 		logger:           *log,
@@ -64,6 +72,7 @@ func main() {
 		httpErrors:       httpErrors,
 		commonMiddleware: commonMiddleware,
 		storage:          storage,
+		usersClient:      *usersClient,
 	}
 
 	err = app.serve()

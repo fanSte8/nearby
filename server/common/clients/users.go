@@ -19,18 +19,20 @@ type UsersClient struct {
 	logger  *slog.Logger
 }
 
+type User struct {
+	ID            int64     `json:"id"`
+	FirstName     string    `json:"firstName"`
+	LastName      string    `json:"lastName"`
+	ImageUrl      string    `json:"imageUrl"`
+	Email         string    `json:"email"`
+	Activated     bool      `json:"activated"`
+	PostsRadiusKm int       `json:"postsRadiusKm"`
+	CreatedAt     time.Time `json:"createdAt"`
+	UpdatedAt     time.Time `json:"updatedAt"`
+}
+
 type UserData struct {
-	User struct {
-		ID            int64     `json:"id"`
-		FirstName     string    `json:"firstName"`
-		LastName      string    `json:"lastName"`
-		ImageUrl      string    `json:"imageUrl"`
-		Email         string    `json:"email"`
-		Activated     bool      `json:"activated"`
-		PostsRadiusKm int       `json:"postsRadiusKm"`
-		CreatedAt     time.Time `json:"createdAt"`
-		UpdatedAt     time.Time `json:"updatedAt"`
-	} `json:"user"`
+	User User `json:"user"`
 }
 
 func NewUsersClient(baseUrl string) (*UsersClient, error) {

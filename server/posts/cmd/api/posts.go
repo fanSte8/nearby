@@ -66,19 +66,20 @@ func (app *application) handleGetLatestPosts(w http.ResponseWriter, r *http.Requ
 
 	v := validator.New()
 
-	radius := app.getRadiusFromQuery(queryValues, v)
-	if !v.Valid() {
-		app.httpErrors.FailedValidationResponse(w, r, v.Errors)
-		return
-	}
-
 	latitude, longitude := app.getCoordinatesFromQuery(queryValues, v)
 	if !v.Valid() {
 		app.httpErrors.FailedValidationResponse(w, r, v.Errors)
 		return
 	}
 
-	posts, err := app.models.Posts.GetLatest(latitude, longitude, radius, pagination)
+	userId := commoncontext.ContextGetUserID(r)
+	userData, err := app.usersClient.GetUserByID(userId)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	posts, err := app.models.Posts.GetLatest(latitude, longitude, userData.User.PostsRadiusKm*1000, pagination)
 	if err != nil {
 		app.httpErrors.ServerErrorResponse(w, r, err)
 		return

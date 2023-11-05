@@ -31,19 +31,6 @@ func (app *application) getPaginationFromQuery(queryValues url.Values) data.Pagi
 	return data.Pagination{Page: page, PageSize: pageSize}
 }
 
-func (app *application) getRadiusFromQuery(queryValues url.Values, v *validator.Validator) int {
-	radiusStr := queryValues.Get("radius")
-	radius, err := strconv.Atoi(radiusStr)
-	if err != nil {
-		v.AddError("radius", "must be valid integer")
-		return 0
-	}
-
-	v.Check(radius > 0, "radius", "must be greater than 0")
-
-	return radius
-}
-
 func (app *application) getCoordinatesFromQuery(queryValues url.Values, v *validator.Validator) (string, string) {
 	latitude := queryValues.Get("latitude")
 	longitude := queryValues.Get("longitude")

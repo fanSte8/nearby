@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS likes (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT,
+    post_id BIGINT NOT NULL REFERENCES posts ON DELETE CASCADE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+    UNIQUE(user_id, post_id)
+);

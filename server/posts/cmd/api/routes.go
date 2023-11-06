@@ -13,7 +13,8 @@ func (app *application) routes() http.Handler {
 
 	r.Methods(http.MethodPost).Path("/v1/posts").HandlerFunc(app.authorize(app.handleCreatePost))
 	r.Methods(http.MethodDelete).Path("/v1/posts/{id}").HandlerFunc(app.authorize(app.handleDeletePost))
-	r.Methods(http.MethodGet).Path("/v1/posts/latest").HandlerFunc(app.authorize(app.handleGetLatestPosts))
+	r.Methods(http.MethodGet).Path("/v1/posts").HandlerFunc(app.authorize(app.handleGetPosts))
+	r.Methods(http.MethodGet).Path("/v1/posts/{id}").HandlerFunc(app.authorize(app.handleGetPost))
 
 	r.Methods(http.MethodPost).Path("/v1/posts/{postId}/likes").HandlerFunc(app.authorize(app.handlePostLike))
 

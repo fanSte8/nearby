@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"nearby/common/commoncontext"
 	"nearby/common/jsonutils"
 	"nearby/common/validator"
@@ -60,7 +61,50 @@ func (app *application) handleCreatePost(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-func (app *application) handleGetLatestPosts(w http.ResponseWriter, r *http.Request) {
+func (app *application) handleGetPost(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	id, err := strconv.ParseInt(params["id"], 10, 64)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	v := validator.New()
+
+	latitude := r.URL.Query().Get("latitude")
+	longitude := r.URL.Query().Get("longitude")
+	data.ValidateCoordinates(v, latitude, longitude)
+	if !v.Valid() {
+		app.httpErrors.FailedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	userId := commoncontext.ContextGetUserID(r)
+	userData, err := app.usersClient.GetUserByID(userId)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	post, err := app.models.Posts.GetPost(id, userId, latitude, longitude)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.httpErrors.NotFoundResponse(w, r)
+		default:
+			app.httpErrors.ServerErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	err = jsonutils.WriteJSON(w, http.StatusCreated, envelope{"post": post, "user": userData.User}, nil)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+}
+
+func (app *application) handleGetPosts(w http.ResponseWriter, r *http.Request) {
 	queryValues := r.URL.Query()
 	pagination := app.getPaginationFromQuery(queryValues)
 

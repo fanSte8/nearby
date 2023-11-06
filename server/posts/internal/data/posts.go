@@ -252,8 +252,55 @@ func (m PostModel) GetPosts(sort string, userId int64, userLatitude, userLongitu
 	return posts, nil
 }
 
-func (m PostModel) GetPopular(userLatitude, userLongitude string, radius_meters int, userID int64) ([]Post, error) {
-	return []Post{}, nil
+func (m PostModel) GetPost(postId, userId int64, userLatitude, userLongitude string) (*PostResponse, error) {
+	query := `
+	SELECT 
+		posts.id,
+		posts.user_id,
+		posts.description,
+		posts.image_url,
+		ST_Distance(location::geography, ST_MakePoint($2, $3)::geography) AS distance,
+		CASE WHEN likes.user_id = $1 THEN TRUE ELSE FALSE END AS liked,
+		COUNT(DISTINCT likes.user_id) AS likes,
+		COUNT(DISTINCT comments.id) AS comments,
+		posts.created_at,
+		posts.updated_at
+	FROM posts
+	LEFT JOIN comments ON comments.post_id = posts.id
+	LEFT JOIN likes ON likes.post_id = posts.id
+	WHERE posts.id=$4
+	GROUP BY posts.id, likes.user_id`
+
+	args := []any{userId, userLatitude, userLongitude, postId}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var post PostResponse
+
+	err := m.db.QueryRowContext(ctx, query, args...).Scan(
+		&post.ID,
+		&post.UserID,
+		&post.Description,
+		&post.ImageUrl,
+		&post.Distance,
+		&post.Liked,
+		&post.Likes,
+		&post.Comments,
+		&post.CreatedAt,
+		&post.UpdatedAt,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return &post, nil
 }
 
 func (m PostModel) Delete(id int64) error {

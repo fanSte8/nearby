@@ -16,9 +16,17 @@ type Notification struct {
 	ID        int64     `json:"id"`
 	UserID    int64     `json:"userId"`
 	PostID    int64     `json:"postId"`
-	Type      string    `json:"text"`
+	Type      string    `json:"type"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+type NotificationResponse struct {
+	UserID    int64     `json:"userId"`
+	PostID    int64     `json:"postId"`
+	Type      string    `json:"type"`
+	Count     int       `json:"count"`
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 type NotificationModel struct {
@@ -44,12 +52,16 @@ func (m NotificationModel) Insert(notification *Notification) error {
 	return nil
 }
 
-func (m NotificationModel) Get(userId int64, pagination Pagination) ([]*Notification, error) {
+func (m NotificationModel) Get(userId int64, pagination Pagination) ([]*NotificationResponse, error) {
 	query := `
-	SELECT id, user_id, post_id, type, created_at, updated_at 
+	SELECT
+	    post_id,
+	    MIN(user_id) AS user_id,
+	    type,
+	    MAX(created_at) AS latest_notification,
+	    COUNT(*) AS count
 	FROM notifications
-	WHERE userId=$1
-	LIMIT $2 OFFSET $3`
+	GROUP BY post_id, type`
 
 	args := []any{userId, pagination.limit(), pagination.offset()}
 
@@ -60,7 +72,7 @@ func (m NotificationModel) Get(userId int64, pagination Pagination) ([]*Notifica
 	if err != nil {
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
-			return []*Notification{}, nil
+			return []*NotificationResponse{}, nil
 		default:
 			return nil, err
 		}
@@ -68,18 +80,17 @@ func (m NotificationModel) Get(userId int64, pagination Pagination) ([]*Notifica
 
 	defer rows.Close()
 
-	notifications := []*Notification{}
+	notifications := []*NotificationResponse{}
 
 	for rows.Next() {
-		var notification Notification
+		var notification NotificationResponse
 
 		err := rows.Scan(
-			&notification.ID,
-			&notification.UserID,
 			&notification.PostID,
+			&notification.UserID,
 			&notification.Type,
+			&notification.Count,
 			&notification.CreatedAt,
-			&notification.UpdatedAt,
 		)
 
 		if err != nil {

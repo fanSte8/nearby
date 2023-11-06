@@ -63,3 +63,8 @@ func (errors HttpErrors) InactiveAccountResponse(w http.ResponseWriter, r *http.
 	message := "your user account must be activated to access this resource"
 	errors.errorResponse(w, r, http.StatusForbidden, message)
 }
+
+func (errors HttpErrors) ForbiddenActionResponse(w http.ResponseWriter, r *http.Request) {
+	message := "your don't have a permission to access this resource"
+	errors.errorResponse(w, r, http.StatusForbidden, message)
+}

@@ -26,6 +26,9 @@ type PostResponse struct {
 	Description string    `json:"description"`
 	ImageUrl    string    `json:"imageUrl"`
 	Distance    float32   `json:"distance"`
+	Liked       bool      `json:"liked"`
+	Likes       int       `json:"likes"`
+	Comments    int       `json:"comments"`
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
 }
@@ -91,25 +94,119 @@ func (m PostModel) Update(post *Post) error {
 	return nil
 }
 
-func (m PostModel) GetLatest(userLatitude, userLongitude string, radius_meters int, pagination Pagination) ([]*PostResponse, error) {
+func (m PostModel) GetById(id int64) (*Post, error) {
 	query := `
-	SELECT id, user_id, description, image_url, distance FROM (
-		SELECT 
-			id,
-			user_id,
-			description,
-			image_url,
-			ST_Distance(location::geography, ST_MakePoint($1, $2)::geography) AS distance 
-		FROM posts
-	) 
-	WHERE distance < $3 
-	ORDER BY distance ASC
-	LIMIT $4 OFFSET $5`
+	SELECT id, user_id, description, image_url, created_at, updated_at
+	FROM users
+	WHERE id = $1`
 
-	args := []any{userLatitude, userLongitude, radius_meters, pagination.limit(), pagination.offset()}
+	var post Post
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
+
+	err := m.db.QueryRowContext(ctx, query, id).Scan(
+		&post.ID,
+		&post.Description,
+		&post.ImageUrl,
+		&post.CreatedAt,
+		&post.UpdatedAt,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return &post, nil
+}
+
+func (m PostModel) GetPosts(sort string, userId int64, userLatitude, userLongitude string, radius_meters int, pagination Pagination) ([]*PostResponse, error) {
+	closestPostsQuery := `
+	SELECT id, user_id, description, image_url, distance, liked, likes, comments, created_at, updated_at FROM (
+		SELECT 
+			posts.id,
+			posts.user_id,
+			posts.description,
+			posts.image_url,
+			CASE WHEN likes.user_id = $1 THEN TRUE ELSE FALSE END AS liked,
+			COUNT(DISTINCT likes.user_id) AS likes,
+			COUNT(DISTINCT comments.id) AS comments,
+			ST_Distance(location::geography, ST_MakePoint($2, $3)::geography) AS distance,
+			posts.created_at,
+			posts.updated_at
+		FROM posts
+		LEFT JOIN comments ON comments.post_id = posts.id
+		LEFT JOIN likes ON likes.post_id = posts.id
+		GROUP BY posts.id, likes.user_id
+	) 
+	WHERE distance < $4 
+	ORDER BY distance ASC
+	LIMIT $5 OFFSET $6`
+
+	latestPostsQuery := `
+	SELECT id, user_id, description, image_url, distance, liked, likes, comments, created_at, updated_at FROM (
+		SELECT 
+			posts.id,
+			posts.user_id,
+			posts.description,
+			posts.image_url,
+			CASE WHEN likes.user_id = $1 THEN TRUE ELSE FALSE END AS liked,
+			COUNT(DISTINCT likes.user_id) AS likes,
+			COUNT(DISTINCT comments.id) AS comments,
+			ST_Distance(location::geography, ST_MakePoint($2, $3)::geography) AS distance,
+			posts.created_at,
+			posts.updated_at
+		FROM posts
+		LEFT JOIN comments ON comments.post_id = posts.id
+		LEFT JOIN likes ON likes.post_id = posts.id
+		GROUP BY posts.id, likes.user_id
+	) 
+	WHERE distance < $4 
+	ORDER BY created_at DESC
+	LIMIT $5 OFFSET $6`
+
+	popularPostsQuery := `
+	SELECT id, user_id, description, image_url, distance, liked, likes, comments, created_at, updated_at FROM (
+		SELECT 
+			posts.id,
+			posts.user_id,
+			posts.description,
+			posts.image_url,
+			CASE WHEN likes.user_id = $1 THEN TRUE ELSE FALSE END AS liked,
+			COUNT(DISTINCT likes.user_id) AS likes,
+			COUNT(DISTINCT comments.id) AS comments,
+			ST_Distance(location::geography, ST_MakePoint($2, $3)::geography) AS distance,
+			(COUNT(DISTINCT likes.user_id) + COUNT(DISTINCT comments.id)) / POWER(EXTRACT(EPOCH FROM NOW() - posts.created_at), 2) AS score,
+			posts.created_at,
+			posts.updated_at
+		FROM posts
+		LEFT JOIN comments ON comments.post_id = posts.id
+		LEFT JOIN likes ON likes.post_id = posts.id
+		GROUP BY posts.id, likes.user_id
+	) 
+	WHERE distance < $4 
+	ORDER BY score DESC
+	LIMIT $5 OFFSET $6`
+
+	args := []any{userId, userLatitude, userLongitude, radius_meters, pagination.limit(), pagination.offset()}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var query string
+	switch {
+	case sort == "latest":
+		query = latestPostsQuery
+	case sort == "closest":
+		query = closestPostsQuery
+	default:
+		query = popularPostsQuery
+	}
 
 	rows, err := m.db.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -134,6 +231,11 @@ func (m PostModel) GetLatest(userLatitude, userLongitude string, radius_meters i
 			&post.Description,
 			&post.ImageUrl,
 			&post.Distance,
+			&post.Liked,
+			&post.Likes,
+			&post.Comments,
+			&post.CreatedAt,
+			&post.UpdatedAt,
 		)
 
 		if err != nil {

@@ -2,16 +2,22 @@ package main
 
 import (
 	"nearby/common/clients"
-	"nearby/common/validator"
 	"nearby/posts/internal/data"
 	"net/url"
 	"strconv"
 	"sync"
 )
 
+type envelope map[string]any
+
 type PostWithUserData struct {
 	Post *data.PostResponse `json:"post"`
 	User *clients.User      `json:"user"`
+}
+
+type CommentsWithUserData struct {
+	Comment *data.Comment `json:"comment"`
+	User    *clients.User `json:"user"`
 }
 
 func (app *application) getPaginationFromQuery(queryValues url.Values) data.Pagination {
@@ -29,14 +35,6 @@ func (app *application) getPaginationFromQuery(queryValues url.Values) data.Pagi
 	}
 
 	return data.Pagination{Page: page, PageSize: pageSize}
-}
-
-func (app *application) getCoordinatesFromQuery(queryValues url.Values, v *validator.Validator) (string, string) {
-	latitude := queryValues.Get("latitude")
-	longitude := queryValues.Get("longitude")
-	data.ValidateCoordinates(v, latitude, longitude)
-
-	return latitude, longitude
 }
 
 func (app *application) combinePostsWithUserData(posts []*data.PostResponse) []PostWithUserData {
@@ -86,4 +84,51 @@ func (app *application) combinePostsWithUserData(posts []*data.PostResponse) []P
 	}
 
 	return combinedPosts
+}
+
+func (app *application) combineCommentsWithUserData(comments []*data.Comment) []CommentsWithUserData {
+	type channelData struct {
+		comment CommentsWithUserData
+		index   int
+	}
+
+	combinedComments := make([]CommentsWithUserData, len(comments))
+	resultChannel := make(chan channelData, len(comments))
+	var wg sync.WaitGroup
+
+	for i, comment := range comments {
+		wg.Add(1)
+
+		go func(i int, comment *data.Comment) {
+			defer wg.Done()
+
+			var combinedComment CommentsWithUserData
+
+			userData, err := app.usersClient.GetUserByID(comment.UserID)
+			if err != nil || userData == nil {
+				combinedComment = CommentsWithUserData{
+					Comment: comment,
+					User:    nil,
+				}
+			} else {
+				combinedComment = CommentsWithUserData{
+					Comment: comment,
+					User:    &userData.User,
+				}
+			}
+
+			resultChannel <- channelData{comment: combinedComment, index: i}
+		}(i, comment)
+	}
+
+	go func() {
+		wg.Wait()
+		close(resultChannel)
+	}()
+
+	for result := range resultChannel {
+		combinedComments[result.index] = result.comment
+	}
+
+	return combinedComments
 }

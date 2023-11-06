@@ -3,7 +3,6 @@ package clients
 import (
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"net/url"
 	"time"
@@ -16,7 +15,6 @@ const (
 type UsersClient struct {
 	baseUrl *url.URL
 	client  *http.Client
-	logger  *slog.Logger
 }
 
 type User struct {
@@ -64,7 +62,6 @@ func (u UsersClient) GetUserByID(id int64) (*UserData, error) {
 	defer response.Body.Close()
 
 	if response.StatusCode == http.StatusNotFound {
-		u.logger.Error(fmt.Sprintf("Unable to find user with id %d", id))
 		return nil, nil
 	}
 

@@ -6,11 +6,11 @@ import (
 	"nearby/common/validator"
 	"nearby/posts/internal/data"
 	"net/http"
+	"strconv"
 
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 )
-
-type envelope = map[string]any
 
 func (app *application) handleCreatePost(w http.ResponseWriter, r *http.Request) {
 	image, _, err := r.FormFile("image")
@@ -66,11 +66,15 @@ func (app *application) handleGetLatestPosts(w http.ResponseWriter, r *http.Requ
 
 	v := validator.New()
 
-	latitude, longitude := app.getCoordinatesFromQuery(queryValues, v)
+	latitude := queryValues.Get("latitude")
+	longitude := queryValues.Get("longitude")
+	data.ValidateCoordinates(v, latitude, longitude)
 	if !v.Valid() {
 		app.httpErrors.FailedValidationResponse(w, r, v.Errors)
 		return
 	}
+
+	sort := queryValues.Get("sort")
 
 	userId := commoncontext.ContextGetUserID(r)
 	userData, err := app.usersClient.GetUserByID(userId)
@@ -79,7 +83,7 @@ func (app *application) handleGetLatestPosts(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	posts, err := app.models.Posts.GetLatest(latitude, longitude, userData.User.PostsRadiusKm*1000, pagination)
+	posts, err := app.models.Posts.GetPosts(sort, userId, latitude, longitude, userData.User.PostsRadiusKm*1000, pagination)
 	if err != nil {
 		app.httpErrors.ServerErrorResponse(w, r, err)
 		return
@@ -88,6 +92,40 @@ func (app *application) handleGetLatestPosts(w http.ResponseWriter, r *http.Requ
 	postsWithUsers := app.combinePostsWithUserData(posts)
 
 	err = jsonutils.WriteJSON(w, http.StatusCreated, envelope{"posts": postsWithUsers}, nil)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+}
+
+func (app *application) handleDeletePost(w http.ResponseWriter, r *http.Request) {
+	userId := commoncontext.ContextGetUserID(r)
+
+	params := mux.Vars(r)
+	id, err := strconv.ParseInt(params["id"], 10, 64)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	post, err := app.models.Posts.GetById(id)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	if post.UserID != userId {
+		app.httpErrors.ForbiddenActionResponse(w, r)
+		return
+	}
+
+	err = app.models.Posts.Delete(id)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	err = jsonutils.WriteJSON(w, http.StatusOK, envelope{"message": "Comment deleted"}, nil)
 	if err != nil {
 		app.httpErrors.ServerErrorResponse(w, r, err)
 		return

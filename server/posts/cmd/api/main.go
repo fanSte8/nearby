@@ -15,13 +15,14 @@ import (
 )
 
 type application struct {
-	config           config
-	logger           slog.Logger
-	models           data.Models
-	httpErrors       httperrors.HttpErrors
-	commonMiddleware middleware.CommonMiddleware
-	storage          storage.Storage
-	usersClient      clients.UsersClient
+	config              config
+	logger              slog.Logger
+	models              data.Models
+	httpErrors          httperrors.HttpErrors
+	commonMiddleware    middleware.CommonMiddleware
+	storage             storage.Storage
+	usersClient         clients.UsersClient
+	notificationsClient clients.NotificationsClient
 }
 
 func main() {
@@ -65,14 +66,21 @@ func main() {
 		return
 	}
 
+	notificationsClient, err := clients.NewNotificationsClient(cfg.NotificationsClientUrl)
+	if err != nil {
+		log.Error("Error creating notifications client", "error", err)
+		return
+	}
+
 	app := &application{
-		config:           *cfg,
-		logger:           *log,
-		models:           data.NewModels(db),
-		httpErrors:       httpErrors,
-		commonMiddleware: commonMiddleware,
-		storage:          storage,
-		usersClient:      *usersClient,
+		config:              *cfg,
+		logger:              *log,
+		models:              data.NewModels(db),
+		httpErrors:          httpErrors,
+		commonMiddleware:    commonMiddleware,
+		storage:             storage,
+		usersClient:         *usersClient,
+		notificationsClient: *notificationsClient,
 	}
 
 	err = app.serve()

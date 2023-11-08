@@ -1,6 +1,7 @@
 package main
 
 import (
+	"nearby/common/clients"
 	"nearby/common/commoncontext"
 	"nearby/common/jsonutils"
 	"nearby/common/validator"
@@ -50,6 +51,21 @@ func (app *application) handleCreateComment(w http.ResponseWriter, r *http.Reque
 		app.httpErrors.ServerErrorResponse(w, r, err)
 		return
 	}
+
+	post, err := app.models.Posts.GetById(postId)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	go func() {
+		app.notificationsClient.CreateNotification(clients.CreateNotificationInput{
+			FromUserID: userId,
+			ToUserID:   post.UserID,
+			PostID:     postId,
+			Type:       clients.CommentNotificationType,
+		})
+	}()
 
 	err = jsonutils.WriteJSON(w, http.StatusOK, envelope{"comment": comment}, nil)
 	if err != nil {

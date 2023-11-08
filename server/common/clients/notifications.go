@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	createNotification = "/internal/v1/notifications/"
+	createNotification = "/internal/v1/notifications"
 )
 
 const (
@@ -48,7 +48,7 @@ func NewNotificationsClient(baseUrl string) (*NotificationsClient, error) {
 func (n NotificationsClient) CreateNotification(input CreateNotificationInput) error {
 	fullURL := n.baseUrl.ResolveReference(&url.URL{Path: createNotification})
 
-	payload := fmt.Sprintf(`{"fromUserId": "%d", "toUserId": "%d", "postId": "%d", "type": "%s"}`, input.FromUserID, input.ToUserID, input.PostID, input.Type)
+	payload := fmt.Sprintf(`{"fromUserId": %d, "toUserId": %d, "postId": %d, "type": "%s"}`, input.FromUserID, input.ToUserID, input.PostID, input.Type)
 
 	req, err := http.NewRequest(http.MethodPost, fullURL.String(), bytes.NewBuffer([]byte(payload)))
 	if err != nil {

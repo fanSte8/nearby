@@ -97,7 +97,7 @@ func (m PostModel) Update(post *Post) error {
 func (m PostModel) GetById(id int64) (*Post, error) {
 	query := `
 	SELECT id, user_id, description, image_url, created_at, updated_at
-	FROM users
+	FROM posts
 	WHERE id = $1`
 
 	var post Post
@@ -107,6 +107,7 @@ func (m PostModel) GetById(id int64) (*Post, error) {
 
 	err := m.db.QueryRowContext(ctx, query, id).Scan(
 		&post.ID,
+		&post.UserID,
 		&post.Description,
 		&post.ImageUrl,
 		&post.CreatedAt,

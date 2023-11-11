@@ -21,7 +21,7 @@ func NewModels(db *sql.DB) Models {
 	}
 }
 
-func NewMockModels(db *sql.DB) Models {
+func NewMockModels() Models {
 	return Models{
 		Posts:    MockPostModel{},
 		Likes:    MockLikeModel{},

@@ -7,7 +7,7 @@ import (
 	"nearby/common/httperrors"
 	"nearby/common/middleware"
 	"nearby/common/storage"
-	"nearby/users/internal/data"
+	"nearby/posts/internal/data"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -19,13 +19,14 @@ func newTestApplication(t *testing.T) *application {
 	httpErrors := httperrors.NewHttpErrors(&logger)
 
 	return &application{
-		config:           config{testing: true, JWTSecret: "test"},
-		logger:           logger,
-		models:           data.NewMockModels(),
-		httpErrors:       httpErrors,
-		commonMiddleware: middleware.NewCommonMiddleware(httpErrors),
-		storage:          storage.MockStorage{},
-		mailerClient:     clients.MockMailerClient{},
+		config:              config{testing: true},
+		logger:              logger,
+		models:              data.NewMockModels(),
+		httpErrors:          httpErrors,
+		commonMiddleware:    middleware.NewCommonMiddleware(httpErrors),
+		storage:             storage.MockStorage{},
+		usersClient:         clients.MockUserClient{},
+		notificationsClient: clients.MockNotificationsClient{},
 	}
 }
 
@@ -38,7 +39,7 @@ func newTestServer(t *testing.T, h http.Handler) *testServer {
 	return &testServer{server}
 }
 
-func (ts *testServer) request(t *testing.T, method string, urlPath string, body io.Reader) int {
+func (ts *testServer) request(t *testing.T, method string, urlPath string, body io.Reader, headers map[string]string) int {
 	requestUrl, err := url.Parse(ts.server.URL + urlPath)
 	if err != nil {
 		t.Fatal(err)
@@ -47,6 +48,10 @@ func (ts *testServer) request(t *testing.T, method string, urlPath string, body 
 	request, err := http.NewRequest(method, requestUrl.String(), body)
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	for k, v := range headers {
+		request.Header.Set(k, v)
 	}
 
 	rs, err := ts.server.Client().Do(request)

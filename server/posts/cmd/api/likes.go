@@ -1,9 +1,11 @@
 package main
 
 import (
+	"errors"
 	"nearby/common/clients"
 	"nearby/common/commoncontext"
 	"nearby/common/jsonutils"
+	"nearby/posts/internal/data"
 	"net/http"
 	"strconv"
 
@@ -22,7 +24,12 @@ func (app *application) handlePostLike(w http.ResponseWriter, r *http.Request) {
 
 	post, err := app.models.Posts.GetById(postId)
 	if err != nil {
-		app.httpErrors.ServerErrorResponse(w, r, err)
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.httpErrors.NotFoundResponse(w, r)
+		default:
+			app.httpErrors.ServerErrorResponse(w, r, err)
+		}
 		return
 	}
 

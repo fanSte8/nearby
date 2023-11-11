@@ -97,7 +97,7 @@ func (app *application) handleGetPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = jsonutils.WriteJSON(w, http.StatusCreated, envelope{"post": post, "user": userData.User}, nil)
+	err = jsonutils.WriteJSON(w, http.StatusOK, envelope{"post": post, "user": userData.User}, nil)
 	if err != nil {
 		app.httpErrors.ServerErrorResponse(w, r, err)
 		return

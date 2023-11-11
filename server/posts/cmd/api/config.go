@@ -16,6 +16,7 @@ type config struct {
 	AWSRegion              string `env:"AWS_REGION"`
 	AWSAccessKeyID         string `env:"AWS_ACCESS_KEY_ID"`
 	AWSAccessKeySecret     string `env:"AWS_ACCESS_KEY_SECRET"`
+	testing                bool
 }
 
 func newConfig() (*config, error) {

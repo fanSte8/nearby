@@ -80,7 +80,11 @@ func (m MockPostModel) GetPosts(sort string, userId int64, userLatitude, userLon
 }
 
 func (m MockPostModel) GetPost(postId, userId int64, userLatitude, userLongitude string) (*PostResponse, error) {
-	return GetMockPostResponses()[0], nil
+	if postId == 1 {
+		return GetMockPostResponses()[0], nil
+	}
+
+	return nil, ErrRecordNotFound
 }
 
 func (m MockPostModel) Delete(id int64) error {

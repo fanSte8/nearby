@@ -36,13 +36,14 @@ func main() {
 	if _, err := os.Stat(".env"); err == nil {
 		err := godotenv.Load()
 		if err != nil {
-			return nil, err
+			log.Error("Error loading .env file", "error", err)
+			return
 		}
 	}
 
 	cfg := &config{}
 
-	err = env.Parse(cfg)
+	err := env.Parse(cfg)
 	if err != nil {
 		log.Error("Error reading config", "error", err)
 		return

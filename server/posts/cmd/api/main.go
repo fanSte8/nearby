@@ -21,8 +21,8 @@ type application struct {
 	httpErrors          httperrors.HttpErrors
 	commonMiddleware    middleware.CommonMiddleware
 	storage             storage.Storage
-	usersClient         clients.UsersClient
-	notificationsClient clients.NotificationsClient
+	usersClient         clients.IUsersClient
+	notificationsClient clients.INotificationsClient
 }
 
 func main() {

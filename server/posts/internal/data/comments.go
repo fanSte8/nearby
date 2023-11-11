@@ -16,6 +16,13 @@ type Comment struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
+type ICommentModel interface {
+	Insert(comment *Comment) error
+	GetById(id int64) (*Comment, error)
+	GetList(postId int64, pagination Pagination) ([]*Comment, error)
+	Delete(id int64) error
+}
+
 type CommentModel struct {
 	db *sql.DB
 }

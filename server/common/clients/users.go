@@ -12,7 +12,7 @@ const (
 	getUserByIDPath = "/internal/v1/users/"
 )
 
-type IUserClient interface {
+type IUsersClient interface {
 	GetUserByID(id int64) (*UserData, error)
 }
 

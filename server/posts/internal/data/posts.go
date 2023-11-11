@@ -51,6 +51,15 @@ func ValidatePost(v *validator.Validator, p *Post) {
 	ValidateCoordinates(v, p.Latitude, p.Longitude)
 }
 
+type IPostModel interface {
+	Insert(post *Post) error
+	Update(post *Post) error
+	GetById(id int64) (*Post, error)
+	GetPosts(sort string, userId int64, userLatitude, userLongitude string, radius_meters int, pagination Pagination) ([]*PostResponse, error)
+	GetPost(postId, userId int64, userLatitude, userLongitude string) (*PostResponse, error)
+	Delete(id int64) error
+}
+
 type PostModel struct {
 	db *sql.DB
 }

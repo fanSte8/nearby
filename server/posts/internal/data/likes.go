@@ -6,6 +6,12 @@ import (
 	"time"
 )
 
+type ILikeModel interface {
+	Exists(userId, postId int64) (bool, error)
+	Insert(userId, postId int64) error
+	Delete(userId, postId int64) error
+}
+
 type LikeModel struct {
 	db *sql.DB
 }

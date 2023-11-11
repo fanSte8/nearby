@@ -2,10 +2,10 @@ package clients
 
 import "time"
 
-type MockUserClient struct {
+type MockUsersClient struct {
 }
 
-func (m MockUserClient) GetUserByID(id int64) (*UserData, error) {
+func (m MockUsersClient) GetUserByID(id int64) (*UserData, error) {
 	if id == 1 {
 		return &UserData{
 			User: User{

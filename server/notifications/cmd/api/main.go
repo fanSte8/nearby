@@ -19,7 +19,7 @@ type application struct {
 	models           data.Models
 	httpErrors       httperrors.HttpErrors
 	commonMiddleware middleware.CommonMiddleware
-	usersClient      clients.UsersClient
+	usersClient      clients.IUsersClient
 }
 
 func main() {

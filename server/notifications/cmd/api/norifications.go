@@ -65,7 +65,7 @@ func (app *application) handleCreateNotification(w http.ResponseWriter, r *http.
 		return
 	}
 
-	err = jsonutils.WriteJSON(w, http.StatusOK, envelope{"notification": notification}, nil)
+	err = jsonutils.WriteJSON(w, http.StatusCreated, envelope{"notification": notification}, nil)
 	if err != nil {
 		app.httpErrors.ServerErrorResponse(w, r, err)
 		return

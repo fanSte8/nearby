@@ -2,6 +2,10 @@
 run:
 	go run ./cmd/api/
 
+.PHONY: test
+test:
+	go test ./cmd/api/
+
 .PHONY: db/migrations/new
 db/migrations/new:
 	@echo 'Creating migration files for ${name}...'

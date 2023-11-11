@@ -20,7 +20,7 @@ type application struct {
 	models           data.Models
 	httpErrors       httperrors.HttpErrors
 	commonMiddleware middleware.CommonMiddleware
-	mailerClient     clients.MailerClient
+	mailerClient     clients.IMailerClient
 	storage          storage.Storage
 }
 

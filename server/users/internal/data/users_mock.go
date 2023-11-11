@@ -9,11 +9,12 @@ import (
 const (
 	MockUserID             = 1
 	MockUserEmail          = "test@mail.com"
+	MockUserPassword       = "password"
 	MockPasswordResetToken = "pwd_token"
 	MockActivationToken    = "act_token"
 )
 
-func getMockUser() *User {
+func GetMockUser() *User {
 	user := User{
 		ID:            1,
 		FirstName:     "Test",
@@ -26,7 +27,7 @@ func getMockUser() *User {
 		UpdatedAt:     time.Now(),
 	}
 
-	err := user.Password.Set("password")
+	err := user.Password.Set(MockUserPassword)
 	if err != nil {
 		panic(fmt.Sprintf("Error creating user mock data %v", err))
 	}
@@ -43,7 +44,7 @@ func (m MockUserModel) Insert(user *User) error {
 }
 
 func (m MockUserModel) GetById(id int64) (*User, error) {
-	user := getMockUser()
+	user := GetMockUser()
 
 	if user.ID == id {
 		return user, nil
@@ -53,7 +54,7 @@ func (m MockUserModel) GetById(id int64) (*User, error) {
 }
 
 func (m MockUserModel) GetByEmail(email string) (*User, error) {
-	user := getMockUser()
+	user := GetMockUser()
 
 	if user.Email == email {
 		return user, nil
@@ -68,7 +69,7 @@ func (m MockUserModel) Update(user *User) error {
 
 func (m MockUserModel) GetByToken(tokenType, tokenText string) (*User, int64, error) {
 	if tokenType == ActivationToken && tokenText == MockActivationToken || tokenType == PasswordResetToken && tokenText == MockPasswordResetToken {
-		return getMockUser(), 1, nil
+		return GetMockUser(), 1, nil
 	}
 
 	return nil, 0, ErrRecordNotFound

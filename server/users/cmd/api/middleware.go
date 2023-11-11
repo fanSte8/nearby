@@ -8,6 +8,13 @@ import (
 )
 
 func (app *application) authorize(next http.HandlerFunc) http.HandlerFunc {
+	if app.config.testing {
+		return func(w http.ResponseWriter, r *http.Request) {
+			r = app.contextSetUser(r, data.GetMockUser())
+			next.ServeHTTP(w, r)
+		}
+	}
+
 	fn := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userID := commoncontext.ContextGetUserID(r)
 

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/caarlos0/env/v9"
 	"github.com/joho/godotenv"
 )
@@ -19,14 +21,16 @@ type config struct {
 }
 
 func newConfig() (*config, error) {
-	err := godotenv.Load()
-	if err != nil {
-		return nil, err
+	if _, err := os.Stat(".env"); err == nil {
+		err := godotenv.Load()
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	cfg := &config{}
 
-	err = env.Parse(cfg)
+	err := env.Parse(cfg)
 	if err != nil {
 		return nil, err
 	}

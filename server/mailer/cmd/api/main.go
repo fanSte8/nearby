@@ -33,10 +33,11 @@ func main() {
 		Level: slog.LevelInfo,
 	}))
 
-	err := godotenv.Load()
-	if err != nil {
-		log.Error("Error reading config", "error", err)
-		return
+	if _, err := os.Stat(".env"); err == nil {
+		err := godotenv.Load()
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	cfg := &config{}

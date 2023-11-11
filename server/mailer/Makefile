@@ -2,6 +2,10 @@
 run:
 	go run ./cmd/api/
 	
+.PHONY: test
+test:
+	go test ./cmd/api/
+	
 .PHONY: audit
 audit:
 	@echo 'Formatting code...'

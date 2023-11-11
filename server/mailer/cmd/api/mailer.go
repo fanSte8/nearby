@@ -6,6 +6,10 @@ import (
 	"github.com/go-mail/mail/v2"
 )
 
+type imailer interface {
+	Send(recipient, sublejct, text string) error
+}
+
 type mailer struct {
 	dialer mail.Dialer
 	sender string

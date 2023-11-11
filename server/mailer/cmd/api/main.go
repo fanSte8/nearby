@@ -23,7 +23,7 @@ type config struct {
 type application struct {
 	config           config
 	logger           slog.Logger
-	mailer           mailer
+	mailer           imailer
 	httpErrors       httperrors.HttpErrors
 	commonMiddleware middleware.CommonMiddleware
 }

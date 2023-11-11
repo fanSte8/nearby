@@ -60,6 +60,14 @@ func (p *password) Matches(password string) (bool, error) {
 	return true, nil
 }
 
+type IUserModel interface {
+	Insert(user *User) error
+	GetById(id int64) (*User, error)
+	GetByEmail(email string) (*User, error)
+	Update(user *User) error
+	GetByToken(tokenType, tokenText string) (*User, int64, error)
+}
+
 type UserModel struct {
 	db *sql.DB
 }
@@ -182,6 +190,7 @@ func (m UserModel) GetByEmail(email string) (*User, error) {
 
 	return &user, nil
 }
+
 func (m UserModel) Update(user *User) error {
 	query := `
 	UPDATE users

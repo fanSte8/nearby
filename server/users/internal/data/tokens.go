@@ -21,7 +21,7 @@ type Token struct {
 	Type   string    `json:"-"`
 }
 
-func generateToken(userId int64, ttl time.Duration, tokenType string, length int) (*Token, error) {
+func generateToken(userId int64, ttl time.Duration, tokenType string, length int) *Token {
 	token := &Token{
 		UserID: userId,
 		Expiry: time.Now().Add(ttl),
@@ -41,7 +41,13 @@ func generateToken(userId int64, ttl time.Duration, tokenType string, length int
 	hash := sha256.Sum256([]byte(token.Text))
 	token.Hash = hash[:]
 
-	return token, nil
+	return token
+}
+
+type ITokenModel interface {
+	New(userID int64, ttl time.Duration, tokenType string, length int) (*Token, error)
+	Insert(token *Token) error
+	MarkUsed(tokenId int64) error
 }
 
 type TokenModel struct {
@@ -49,12 +55,13 @@ type TokenModel struct {
 }
 
 func (m TokenModel) New(userID int64, ttl time.Duration, tokenType string, length int) (*Token, error) {
-	token, err := generateToken(userID, ttl, tokenType, length)
+	token := generateToken(userID, ttl, tokenType, length)
+
+	err := m.Insert(token)
 	if err != nil {
 		return nil, err
 	}
 
-	err = m.Insert(token)
 	return token, err
 }
 

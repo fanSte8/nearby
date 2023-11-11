@@ -37,6 +37,12 @@ type NotificationResponse struct {
 	CreatedAt time.Time `json:"createdAt"`
 }
 
+type INotificationModel interface {
+	Insert(notification *Notification) error
+	Get(userId, postId int64, notificationType string) (*Notification, error)
+	GetList(toUserId int64, pagination Pagination) ([]*NotificationResponse, error)
+}
+
 type NotificationModel struct {
 	db *sql.DB
 }

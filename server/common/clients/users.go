@@ -12,6 +12,10 @@ const (
 	getUserByIDPath = "/internal/v1/users/"
 )
 
+type IUserClient interface {
+	GetUserByID(id int64) (*UserData, error)
+}
+
 type UsersClient struct {
 	baseUrl *url.URL
 	client  *http.Client

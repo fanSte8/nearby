@@ -18,6 +18,10 @@ const (
 	CommentNotificationType = "Comment"
 )
 
+type INotificationsClient interface {
+	CreateNotification(input CreateNotificationInput) error
+}
+
 type NotificationsClient struct {
 	baseUrl *url.URL
 	client  *http.Client

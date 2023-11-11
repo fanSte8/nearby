@@ -14,6 +14,11 @@ const (
 	passwordResetTokenMailPath = "/v1/mailer/password-reset"
 )
 
+type IMailerClient interface {
+	SendActivationTokenMail(recipient, token string) error
+	SendPasswordResetTokenMail(recipient, token string) error
+}
+
 type MailerClient struct {
 	baseUrl *url.URL
 	client  *http.Client

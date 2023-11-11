@@ -26,20 +26,20 @@ jobs:
 
     - name: Test users service
       run: |
-        cd users
+        cd server/users
         go test -v ./...
 
     - name: Test posts service
       run: |
-        cd posts
+        cd server/posts
         go test -v ./...
 
     - name: Test notifications service
       run: |
-        cd notifications
+        cd server/notifications
         go test -v ./...
 
     - name: Test mailer service
       run: |
-        cd mailer
+        cd server/mailer
         go test -v ./...

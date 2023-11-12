@@ -222,7 +222,7 @@ func (m UserModel) Update(user *User) error {
 
 func (m UserModel) GetByToken(tokenType, tokenText string) (*User, int64, error) {
 	query := `
-        SELECT users.id, users.first_name, users.last_name, users.email, users.image_url, users.password, users.activated, user.posts_radius_km, users.created_at, users.updated_at, tokens.id
+        SELECT users.id, users.first_name, users.last_name, users.email, users.image_url, users.password, users.activated, users.posts_radius_km, users.created_at, users.updated_at, tokens.id
         FROM users
         INNER JOIN tokens
         ON users.id = tokens.user_id

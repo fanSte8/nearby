@@ -65,9 +65,18 @@ func (app *application) combinePostsWithUserData(posts []*data.PostResponse) []P
 				return
 			}
 
-			combinedPost := PostWithUserData{
-				Post: post,
-				User: &userData.User,
+			var combinedPost PostWithUserData
+
+			if userData == nil {
+				combinedPost = PostWithUserData{
+					Post: post,
+					User: nil,
+				}
+			} else {
+				combinedPost = PostWithUserData{
+					Post: post,
+					User: &userData.User,
+				}
 			}
 
 			resultChannel <- channelData{post: combinedPost, index: i}

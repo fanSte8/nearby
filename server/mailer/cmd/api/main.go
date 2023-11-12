@@ -12,7 +12,7 @@ import (
 )
 
 type config struct {
-	ServerPort   int    `env:"PORT"`
+	ServerPort   int    `env:"PORT"  envDefault:"3003"`
 	SmtpHost     string `env:"SMTP_HOST"`
 	SmtpPort     int    `env:"SMTP_PORT"`
 	SmtpUsername string `env:"SMTP_USERNAME"`

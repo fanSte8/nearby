@@ -1,12 +1,12 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { LoginScreen } from './screens';
+import { RegisterScreen } from './screens';
 import { AuthLayout } from './layouts';
 
 const App = () => {
   return (
     <View style={styles.container}>
       <AuthLayout>
-        <LoginScreen />
+        <RegisterScreen />
       </AuthLayout>
     </View>
   );

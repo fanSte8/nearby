@@ -1,0 +1,56 @@
+import { useState } from "react"
+import { View, Image, Text, StyleSheet, TouchableOpacity } from "react-native"
+import { LabeledInput, Button } from "../components";
+import { PRIMARY_COLOR } from "../constants";
+
+export const RegisterScreen = () => {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.inputContainer}>
+        <LabeledInput value={firstName} onChangeText={setFirstName} label="First Name" placeholder="" secureText={false} />
+        <LabeledInput value={email} onChangeText={setLastName} label="Last Name" placeholder="" secureText={false} />
+        <LabeledInput value={email} onChangeText={setEmail} label="Email" placeholder="" secureText={false} />
+        <LabeledInput label="Password" value={password} onChangeText={setPassword} placeholder="" secureText={true} />
+      </View>
+      <Button onPress={() => null} text="Register" />
+      <TouchableOpacity style={styles.link}>
+        <Text style={styles.linkText}>Already have an account? Login here!</Text>
+      </TouchableOpacity>
+    </View>
+  )
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    width: "100%",
+    padding: 10
+  },
+  logo: {
+    width: 100,
+    height: 100,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  inputContainer: {
+    width: "100%",
+    padding: 10
+  },
+  link: {
+    paddingTop: 10
+  },
+  linkText: {
+    color: PRIMARY_COLOR
+  }
+});

@@ -18,11 +18,12 @@ export const AuthLayout = ({ children }: { children: React.ReactNode }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 40,
+    paddingTop: 40
   },
   header: {
     padding: 40,
     alignItems: 'center',
+    marginBottom: 20
   },
   logo: {
     width: 100,
@@ -35,6 +36,6 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center'
+    height: 100
   },
 });

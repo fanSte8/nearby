@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { View, Image, Text, StyleSheet, TouchableOpacity } from "react-native"
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
 import { LabeledInput, Button } from "../components";
 import { PRIMARY_COLOR } from "../constants";
 
@@ -17,26 +17,25 @@ export const RegisterScreen = () => {
         <LabeledInput value={email} onChangeText={setEmail} label="Email" placeholder="" secureText={false} />
         <LabeledInput label="Password" value={password} onChangeText={setPassword} placeholder="" secureText={true} />
       </View>
-      <Button onPress={() => null} text="Register" />
-      <TouchableOpacity style={styles.link}>
-        <Text style={styles.linkText}>Already have an account? Login here!</Text>
-      </TouchableOpacity>
+      <View style={styles.buttons}>
+        <Button onPress={() => null} text="Register" />
+        <TouchableOpacity style={styles.link}>
+          <Text style={styles.linkText}>Already have an account? Login here!</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#ffffff',
     width: "100%",
     padding: 10
   },
   logo: {
     width: 100,
-    height: 100,
+    height: 100
   },
   title: {
     fontSize: 24,
@@ -47,7 +46,11 @@ const styles = StyleSheet.create({
     width: "100%",
     padding: 10
   },
+  buttons: {
+    alignSelf: 'center'
+  },
   link: {
+    alignSelf: 'center',
     paddingTop: 10
   },
   linkText: {

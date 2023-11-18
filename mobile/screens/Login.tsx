@@ -13,22 +13,21 @@ export const LoginScreen = () => {
         <LabeledInput value={email} onChangeText={setEmail} label="Email" placeholder="" secureText={false} />
         <LabeledInput label="Password" value={password} onChangeText={setPassword} placeholder="" secureText={true} />
       </View>
+      <View style={styles.buttons}>
       <Button onPress={() => null} text="Login" />
-      <TouchableOpacity style={styles.link}>
-        <Text style={styles.linkText}>Forgotten password?</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.link}>
-        <Text style={styles.linkText}>Don't have an account yet? Register!</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.link}>
+          <Text style={styles.linkText}>Forgotten password?</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.link}>
+          <Text style={styles.linkText}>Don't have an account yet? Register!</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#ffffff',
     width: "100%",
     padding: 10
@@ -46,7 +45,11 @@ const styles = StyleSheet.create({
     width: "100%",
     padding: 10
   },
+  buttons: {
+    alignSelf: 'center'
+  },
   link: {
+    alignSelf: 'center',
     paddingTop: 10
   },
   linkText: {

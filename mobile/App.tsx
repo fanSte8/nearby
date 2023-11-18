@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { RegisterScreen } from './screens';
+import { ForgottenPasswordScreen, LoginScreen, RegisterScreen } from './screens';
 import { AuthLayout } from './layouts';
 
 const App = () => {

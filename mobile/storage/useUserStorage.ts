@@ -15,19 +15,23 @@ interface User {
 interface UserState {
   user: User | null,
   isLoggedIn: boolean,
+  token: string,
   setUser: (user: User) => void,
   setIsLoggedIn: (isLoggedIn: boolean) => void,
+  setToken: (token: string) => void,
   reset: () => void
 }
 
 export const useUserStore = create<UserState>()(
   persist(
     (set) => ({
-    user: null,
-    isLoggedIn: false,
-    setUser: (user: User) => set(() => ({ user })),
-    setIsLoggedIn: (isLoggedIn: boolean) => set(() => ({ isLoggedIn })),
-    reset: () => set(() => ({ user: null, isLoggedIn: false }))
+      user: null,
+      isLoggedIn: false,
+      token: '',
+      setUser: (user: User) => set(() => ({ user })),
+      setIsLoggedIn: (isLoggedIn: boolean) => set(() => ({ isLoggedIn })),
+      setToken: (token: string) => set(() => ({ token })),
+      reset: () => set(() => ({ user: null, isLoggedIn: false, token: '' }))
     }),
     {
       name: 'user-state',

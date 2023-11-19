@@ -1,23 +1,46 @@
 import { useState } from "react"
 import { View, Image, Text, StyleSheet, TouchableOpacity } from "react-native"
-import { LabeledInput, Button } from "../components";
+import { LabeledInput, Button, Alert } from "../components";
 import { PRIMARY_COLOR } from "../constants";
-import { useNavigation } from "@react-navigation/native";
 import { AuthLayout } from "../layouts";
+import { login } from "../api/users";
+import { useUserStore } from "../storage/useUserStorage";
 
 export const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const setUser = useUserStore(store => store.setUser);
+  const setToken = useUserStore(store => store.setToken);
+  const setIsLoggedIn = useUserStore(store => store.setIsLoggedIn);
+
+  const handleLogin = async () => {
+    const { data, error } = await login(email, password);
+    
+    if (error) {
+      setError(error);
+    } else {
+      setToken(data.token);
+      setUser(data.user);
+      setIsLoggedIn(true);
+    }
+  }
 
   return (
     <AuthLayout>
       <View style={styles.container}>
+        {
+          error && (
+            <Alert type='warning' text="Incorrect email or password" />
+          )
+        }
         <View style={styles.inputContainer}>
           <LabeledInput value={email} onChangeText={setEmail} label="Email" placeholder="" secureText={false} />
           <LabeledInput label="Password" value={password} onChangeText={setPassword} placeholder="" secureText={true} />
         </View>
         <View style={styles.buttons}>
-        <Button onPress={() => null} text="Login" />
+        <Button onPress={handleLogin} text="Login" />
           <TouchableOpacity style={styles.link} onPress={() => navigation.navigate('ForgottenPassword')}>
             <Text style={styles.linkText}>Forgotten password?</Text>
           </TouchableOpacity>

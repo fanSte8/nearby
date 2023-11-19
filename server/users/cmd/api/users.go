@@ -193,7 +193,7 @@ func (app *application) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = jsonutils.WriteJSON(w, http.StatusOK, envelope{"token": string(jwtBytes)}, nil)
+	err = jsonutils.WriteJSON(w, http.StatusOK, envelope{"token": string(jwtBytes), "user": user}, nil)
 	if err != nil {
 		app.httpErrors.ServerErrorResponse(w, r, err)
 		return

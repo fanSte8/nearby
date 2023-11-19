@@ -2,7 +2,7 @@ import { useState } from "react"
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native"
 import { LabeledInput,Button, Alert } from "../components"
 import { PRIMARY_COLOR } from "../constants"
-import { AuthLayout } from "../layouts"
+import { NearbyLogoLayout } from "../layouts"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 import { forgottenPassword } from "../api/users"
 
@@ -21,7 +21,7 @@ export const ForgottenPasswordScreen = ({ navigation }: any) => {
   }
 
   return (
-    <AuthLayout>
+    <NearbyLogoLayout>
         <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.container}>
             <Text style={styles.text}>Forgot your password? Enter your email and we'll send you a code you can use to reset it.</Text>
@@ -41,7 +41,7 @@ export const ForgottenPasswordScreen = ({ navigation }: any) => {
             </View>
           </View>
         </KeyboardAwareScrollView>
-    </AuthLayout>
+    </NearbyLogoLayout>
   )
 }
 

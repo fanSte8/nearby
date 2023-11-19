@@ -2,7 +2,7 @@ import { useState } from "react"
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
 import { LabeledInput, Button, Alert } from "../components"
 import { PRIMARY_COLOR } from "../constants"
-import { AuthLayout } from "../layouts"
+import { NearbyLogoLayout } from "../layouts"
 import { register } from "../api/users"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 
@@ -24,7 +24,7 @@ export const RegisterScreen = ({ navigation }: any) => {
   }
 
   return (
-    <AuthLayout>
+    <NearbyLogoLayout>
       <View style={styles.container}>
         {
           error && (
@@ -46,7 +46,7 @@ export const RegisterScreen = ({ navigation }: any) => {
           </View>
         </KeyboardAwareScrollView>
       </View>
-    </AuthLayout>
+    </NearbyLogoLayout>
   )
 }
 

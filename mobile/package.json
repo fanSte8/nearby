@@ -21,7 +21,8 @@
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-safe-area-context": "4.6.3",
     "react-native-screens": "~3.22.0",
-    "zustand": "^4.4.6"
+    "zustand": "^4.4.6",
+    "expo-location": "~16.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

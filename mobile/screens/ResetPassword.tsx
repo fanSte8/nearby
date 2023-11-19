@@ -2,7 +2,7 @@ import { useState } from "react"
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native"
 import { LabeledInput,Button, Alert } from "../components"
 import { PRIMARY_COLOR } from "../constants"
-import { AuthLayout } from "../layouts"
+import { NearbyLogoLayout } from "../layouts"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 import { forgottenPassword, resetPassword } from "../api/users"
 
@@ -24,7 +24,7 @@ export const ResetPasswordScreen = ({ navigation, route }: any) => {
   }
 
   return (
-    <AuthLayout>
+    <NearbyLogoLayout>
       <View style={styles.container}>
         <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
             {
@@ -55,7 +55,7 @@ export const ResetPasswordScreen = ({ navigation, route }: any) => {
           </View>
         </KeyboardAwareScrollView>
       </View>
-    </AuthLayout>
+    </NearbyLogoLayout>
   )
 }
 

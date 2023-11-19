@@ -2,7 +2,7 @@ import { useState } from "react"
 import { View, Image, Text, StyleSheet, TouchableOpacity } from "react-native"
 import { LabeledInput, Button, Alert } from "../components"
 import { PRIMARY_COLOR } from "../constants"
-import { AuthLayout } from "../layouts"
+import { NearbyLogoLayout } from "../layouts"
 import { login } from "../api/users"
 import { useUserStore } from "../storage/useUserStorage"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
@@ -31,7 +31,7 @@ export const LoginScreen = ({ navigation, route }: any) => {
   }
 
   return (
-    <AuthLayout>
+    <NearbyLogoLayout>
       <View style={styles.container}>
         <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
           <View style={{ padding: 10 }}>
@@ -66,7 +66,7 @@ export const LoginScreen = ({ navigation, route }: any) => {
           </View>
         </KeyboardAwareScrollView>
       </View>
-    </AuthLayout>
+    </NearbyLogoLayout>
   )
 }
 

@@ -2,7 +2,7 @@ import React from "react"
 import { View, Text, StyleSheet, Image } from "react-native"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 
-export const AuthLayout = ({ children }: { children: React.ReactNode }) => {
+export const NearbyLogoLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>

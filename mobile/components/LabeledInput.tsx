@@ -11,7 +11,7 @@ interface PropsType {
 
 export const LabeledInput = ({ label, value, onChangeText, placeholder, secureText }: PropsType) => {
   return <View style={{ padding: 10 }}>
-    <Text>{label}</Text>
+    <Text style={{ paddingLeft: 5 }}>{label}</Text>
     <Input 
       value={value}
       onChangeText={onChangeText}

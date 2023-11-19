@@ -2,28 +2,31 @@ import { useState } from "react"
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
 import { LabeledInput, Button } from "../components";
 import { PRIMARY_COLOR } from "../constants";
+import { AuthLayout } from "../layouts";
 
-export const RegisterScreen = () => {
+export const RegisterScreen = ({ navigation }: any) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   return (
-    <View style={styles.container}>
-      <View style={styles.inputContainer}>
-        <LabeledInput value={firstName} onChangeText={setFirstName} label="First Name" placeholder="" secureText={false} />
-        <LabeledInput value={email} onChangeText={setLastName} label="Last Name" placeholder="" secureText={false} />
-        <LabeledInput value={email} onChangeText={setEmail} label="Email" placeholder="" secureText={false} />
-        <LabeledInput label="Password" value={password} onChangeText={setPassword} placeholder="" secureText={true} />
+    <AuthLayout>
+      <View style={styles.container}>
+        <View style={styles.inputContainer}>
+          <LabeledInput value={firstName} onChangeText={setFirstName} label="First Name" placeholder="" secureText={false} />
+          <LabeledInput value={lastName} onChangeText={setLastName} label="Last Name" placeholder="" secureText={false} />
+          <LabeledInput value={email} onChangeText={setEmail} label="Email" placeholder="" secureText={false} />
+          <LabeledInput label="Password" value={password} onChangeText={setPassword} placeholder="" secureText={true} />
+        </View>
+        <View style={styles.buttons}>
+          <Button onPress={() => navigation.navigate('Login')} text="Register" />
+          <TouchableOpacity style={styles.link} onPress={() => navigation.navigate('Login')}>
+            <Text style={styles.linkText}>Already have an account? Login here!</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      <View style={styles.buttons}>
-        <Button onPress={() => null} text="Register" />
-        <TouchableOpacity style={styles.link}>
-          <Text style={styles.linkText}>Already have an account? Login here!</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    </AuthLayout>
   )
 }
 

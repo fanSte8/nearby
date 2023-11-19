@@ -1,8 +1,5 @@
-import axios from "axios"
 import { URLS } from "./urls"
-import * as SecureStore from 'expo-secure-store'
-import { JWT_KEY } from "../constants"
-import { formatError } from "."
+import { formatError, authorizedAxios as axios } from "."
 
 interface Response {
   data: any,

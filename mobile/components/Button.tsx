@@ -1,5 +1,5 @@
-import { TouchableOpacity, Text, StyleSheet } from "react-native";
-import { PRIMARY_COLOR } from "../constants";
+import { TouchableOpacity, Text, StyleSheet } from "react-native"
+import { PRIMARY_COLOR } from "../constants"
 
 interface PropsType {
   onPress: () => void,
@@ -25,4 +25,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-});
+})

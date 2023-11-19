@@ -1,5 +1,6 @@
-import React from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import React from "react"
+import { View, Text, StyleSheet, Image } from "react-native"
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 
 export const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -12,8 +13,8 @@ export const AuthLayout = ({ children }: { children: React.ReactNode }) => {
         {children}
       </View>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -39,4 +40,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 100
   },
-});
+})

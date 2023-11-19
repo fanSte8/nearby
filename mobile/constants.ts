@@ -1,3 +1,3 @@
-export const JWT_KEY = "JWT_KEY";
+export const JWT_KEY = "JWT_KEY"
 
-export const PRIMARY_COLOR = "#00be63";
+export const PRIMARY_COLOR = "#00be63"

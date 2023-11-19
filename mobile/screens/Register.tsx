@@ -1,30 +1,50 @@
 import { useState } from "react"
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
-import { LabeledInput, Button } from "../components";
-import { PRIMARY_COLOR } from "../constants";
-import { AuthLayout } from "../layouts";
+import { LabeledInput, Button, Alert } from "../components"
+import { PRIMARY_COLOR } from "../constants"
+import { AuthLayout } from "../layouts"
+import { register } from "../api/users"
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 
 export const RegisterScreen = ({ navigation }: any) => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+
+  const handleRegister = async () => {
+    const { error } = await register(firstName, lastName, email, password)
+
+    if (error) {
+      setError(Object.values(error).join('\n'))
+    } else {
+      navigation.navigate('Login', { from: 'register' })
+    }
+  }
 
   return (
     <AuthLayout>
       <View style={styles.container}>
-        <View style={styles.inputContainer}>
-          <LabeledInput value={firstName} onChangeText={setFirstName} label="First Name" placeholder="" secureText={false} />
-          <LabeledInput value={lastName} onChangeText={setLastName} label="Last Name" placeholder="" secureText={false} />
-          <LabeledInput value={email} onChangeText={setEmail} label="Email" placeholder="" secureText={false} />
-          <LabeledInput label="Password" value={password} onChangeText={setPassword} placeholder="" secureText={true} />
-        </View>
-        <View style={styles.buttons}>
-          <Button onPress={() => navigation.navigate('Login')} text="Register" />
-          <TouchableOpacity style={styles.link} onPress={() => navigation.navigate('Login')}>
-            <Text style={styles.linkText}>Already have an account? Login here!</Text>
-          </TouchableOpacity>
-        </View>
+        {
+          error && (
+            <Alert type='warning' text={error} />
+          )
+        }
+        <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
+          <View style={styles.inputContainer}>
+            <LabeledInput value={firstName} onChangeText={setFirstName} label="First Name" placeholder="" secureText={false} />
+            <LabeledInput value={lastName} onChangeText={setLastName} label="Last Name" placeholder="" secureText={false} />
+            <LabeledInput value={email} onChangeText={setEmail} label="Email" placeholder="" secureText={false} />
+            <LabeledInput label="Password" value={password} onChangeText={setPassword} placeholder="" secureText={true} />
+          </View>
+          <View style={styles.buttons}>
+            <Button onPress={handleRegister} text="Register" />
+            <TouchableOpacity style={styles.link} onPress={() => navigation.navigate('Login')}>
+              <Text style={styles.linkText}>Already have an account? Login here!</Text>
+            </TouchableOpacity>
+          </View>
+        </KeyboardAwareScrollView>
       </View>
     </AuthLayout>
   )
@@ -59,4 +79,4 @@ const styles = StyleSheet.create({
   linkText: {
     color: PRIMARY_COLOR
   }
-});
+})

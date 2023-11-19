@@ -1,15 +1,15 @@
-import { StyleSheet, Text, View } from 'react-native';
-import { ForgottenPasswordScreen, HomeScreen, LoginScreen, RegisterScreen, ResetPasswordScreen } from './screens';
-import { AuthLayout } from './layouts';
+import { StyleSheet, Text, View } from 'react-native'
+import { ForgottenPasswordScreen, HomeScreen, LoginScreen, RegisterScreen, ResetPasswordScreen } from './screens'
+import { AuthLayout } from './layouts'
 
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useUserStore } from './storage/useUserStorage';
+import { NavigationContainer } from '@react-navigation/native'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { useUserStore } from './storage/useUserStorage'
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator()
 
 const App = () => {
-  const isLoggedIn = useUserStore(store => store.isLoggedIn);
+  const isLoggedIn = useUserStore(store => store.isLoggedIn)
 
   return (
     <NavigationContainer>
@@ -28,7 +28,7 @@ const App = () => {
         )
       }
     </NavigationContainer>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -36,6 +36,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
   },
-});
+})
 
-export default App;
+export default App

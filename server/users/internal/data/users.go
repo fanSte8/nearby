@@ -73,21 +73,21 @@ type UserModel struct {
 }
 
 func ValidateEmail(v *validator.Validator, email string) {
-	v.Check(email != "", "email", "must be provided")
-	v.Check(validator.Matches(email, validator.EmailRX), "email", "must be a valid email address")
+	v.Check(email != "", "email", "Email must be provided")
+	v.Check(validator.Matches(email, validator.EmailRX), "email", "Email must be a valid address")
 }
 
 func ValidatePassword(v *validator.Validator, password string) {
-	v.Check(password != "", "password", "must be provided")
-	v.Check(len(password) >= 8, "password", "must be at least 8 characters long")
+	v.Check(password != "", "password", "Password must be provided")
+	v.Check(len(password) >= 8, "password", "Password must be at least 8 characters long")
 }
 
 func ValidateUser(v *validator.Validator, user *User) {
-	v.Check(user.FirstName != "", "firstName", "must be provided")
-	v.Check(len(user.FirstName) <= 50, "firstName", "must not be more than 50 characters long")
+	v.Check(user.FirstName != "", "firstName", "First name must be provided")
+	v.Check(len(user.FirstName) <= 50, "firstName", "First name must not be more than 50 characters long")
 
-	v.Check(user.LastName != "", "LastName", "must be provided")
-	v.Check(len(user.LastName) <= 50, "lastName", "must not be more than 50 characters long")
+	v.Check(user.LastName != "", "LastName", "Last name must be provided")
+	v.Check(len(user.LastName) <= 50, "lastName", "Last name must not be more than 50 characters long")
 
 	ValidateEmail(v, user.Email)
 

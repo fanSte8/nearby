@@ -1,5 +1,5 @@
 import { View, Text } from "react-native"
-import { Input } from "./Input";
+import { Input } from "./Input"
 
 interface PropsType {
   label: string,

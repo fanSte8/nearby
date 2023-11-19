@@ -152,8 +152,8 @@ func (app *application) handleLogin(w http.ResponseWriter, r *http.Request) {
 
 	v := validator.New()
 
-	v.Check(input.Email != "", "email", "Field is required")
-	v.Check(input.Password != "", "password", "Field is required")
+	v.Check(input.Email != "", "email", "Email field is required")
+	v.Check(input.Password != "", "password", "Password field is required")
 	if !v.Valid() {
 		app.httpErrors.FailedValidationResponse(w, r, v.Errors)
 		return

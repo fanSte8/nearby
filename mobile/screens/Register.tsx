@@ -17,7 +17,7 @@ export const RegisterScreen = ({ navigation }: any) => {
     const { error } = await register(firstName, lastName, email, password)
 
     if (error) {
-      setError(Object.values(error).join('\n'))
+      setError(error)
     } else {
       navigation.navigate('Login', { from: 'register' })
     }

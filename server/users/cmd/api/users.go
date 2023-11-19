@@ -373,7 +373,7 @@ func (app *application) handleForgottenPassword(w http.ResponseWriter, r *http.R
 
 func (app *application) handleResetPassword(w http.ResponseWriter, r *http.Request) {
 	var input struct {
-		Token    string `json:"token"`
+		Token    string `json:"code"`
 		Password string `json:"password"`
 	}
 
@@ -395,7 +395,7 @@ func (app *application) handleResetPassword(w http.ResponseWriter, r *http.Reque
 	if err != nil {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound):
-			v.AddError("token", "Incorrect or expired token")
+			v.AddError("token", "Incorrect or expired code")
 			app.httpErrors.FailedValidationResponse(w, r, v.Errors)
 		default:
 			app.httpErrors.ServerErrorResponse(w, r, err)

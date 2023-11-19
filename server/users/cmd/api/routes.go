@@ -18,7 +18,7 @@ func (app *application) routes() http.Handler {
 
 	r.Methods(http.MethodPost).Path("/v1/users/change-password").HandlerFunc(app.authorize(app.handleChangePassword))
 	r.Methods(http.MethodPost).Path("/v1/users/forgotten-password").HandlerFunc(app.handleForgottenPassword)
-	r.Methods(http.MethodPost).Path("/v1/users/reset-password").HandlerFunc(app.authorize(app.handleResetPassword))
+	r.Methods(http.MethodPost).Path("/v1/users/reset-password").HandlerFunc(app.handleResetPassword)
 
 	r.Methods(http.MethodGet).Path("/v1/users/activate").HandlerFunc(app.authorize(app.handleNewActivationToken))
 	r.Methods(http.MethodPost).Path("/v1/users/activate").HandlerFunc(app.authorize(app.handleActivateAccount))

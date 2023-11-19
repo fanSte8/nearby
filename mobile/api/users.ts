@@ -2,6 +2,7 @@ import axios from "axios"
 import { URLS } from "./urls"
 import * as SecureStore from 'expo-secure-store'
 import { JWT_KEY } from "../constants"
+import { formatError } from "."
 
 interface Response {
   data: any,
@@ -19,12 +20,12 @@ export const login = async (email: string, password: string): Promise<Response> 
   } catch(error: any) {
     return {
       data: null,
-      error: error.response.data.error
+      error: formatError(error)
     }
   }
 }
 
-export const register = async (firstName: string, lastName: string, email: string, password: string) => {
+export const register = async (firstName: string, lastName: string, email: string, password: string): Promise<Response> => {
   try {
     const response = await axios.post(URLS.USERS.REGISTER, { firstName, lastName, email, password })
 
@@ -35,7 +36,46 @@ export const register = async (firstName: string, lastName: string, email: strin
   } catch(error: any) {
     return {
       data: null,
-      error: error.response.data.error
+      error: formatError(error)
+    }
+  }
+}
+
+export const forgottenPassword = async (email: string): Promise<Response> => {
+  try {
+    const response = await axios.post(URLS.USERS.FORGOTTEN_PASSWORD, { email })
+
+    return {
+      data: response.data,
+      error: null
+    }
+  } catch(error: any) {
+    if (error.response.status === 404) {
+      return {
+        data: null,
+        error: 'No user found with the provided email.'
+      }
+    }
+
+    return {
+      data: null,
+      error: formatError(error)
+    }
+  }
+}
+
+export const resetPassword = async (password: string, code: string): Promise<Response> => {
+  try {
+    const response = await axios.post(URLS.USERS.RESET_PASSWORD, { password, code })
+
+    return {
+      data: response.data,
+      error: null
+    }
+  } catch(error: any) {
+    return {
+      data: null,
+      error: formatError(error)
     }
   }
 }

@@ -1,15 +1,28 @@
 import { StyleSheet, Text, View } from 'react-native'
-import { ForgottenPasswordScreen, HomeScreen, LoginScreen, RegisterScreen, ResetPasswordScreen } from './screens'
-import { NearbyLogoLayout } from './layouts'
+import { ForgottenPasswordScreen, HomeScreen, LocationPermissionDeniedScreen, LoginScreen, RegisterScreen, ResetPasswordScreen } from './screens'
+import * as Location from 'expo-location';  
 
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { useUserStore } from './storage/useUserStorage'
+import { useEffect, useState } from 'react';
 
 const Stack = createNativeStackNavigator()
 
 const App = () => {
   const isLoggedIn = useUserStore(store => store.isLoggedIn)
+  const [locationPermission, setLocationPermission] = useState(false)
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      setLocationPermission(status === 'granted')
+    })();
+  });
+
+  if (!locationPermission) {
+    return <LocationPermissionDeniedScreen />
+  }
 
   return (
     <NavigationContainer>

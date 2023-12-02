@@ -41,6 +41,7 @@ type INotificationModel interface {
 	Insert(notification *Notification) error
 	Get(userId, postId int64, notificationType string) (*Notification, error)
 	GetList(toUserId int64, pagination Pagination) ([]*NotificationResponse, error)
+	MarkViewed(userId int64) error
 }
 
 type NotificationModel struct {
@@ -156,4 +157,18 @@ func (m NotificationModel) GetList(toUserId int64, pagination Pagination) ([]*No
 	}
 
 	return notifications, nil
+}
+
+func (m NotificationModel) MarkViewed(userId int64) error {
+	query := `UPDATE notifications SET seen = TRUE WHERE to_user_id = $1`
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	_, err := m.db.ExecContext(ctx, query, userId)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

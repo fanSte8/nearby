@@ -32,3 +32,7 @@ func (m MockNotificationsModel) GetList(toUserId int64, pagination Pagination) (
 		},
 	}, nil
 }
+
+func (m MockNotificationsModel) MarkViewed(userId int64) error {
+	return nil
+}

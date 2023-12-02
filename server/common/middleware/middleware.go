@@ -69,6 +69,33 @@ func (m CommonMiddleware) Authorize(JWTSecret string, next http.HandlerFunc) htt
 
 		r = commoncontext.ContextSetUserID(r, userID)
 
+		fmt.Println(claims.Set)
+
+		activated, ok := claims.Set["activated"].(bool)
+
+		fmt.Println(activated, ok)
+
+		if ok {
+			r = commoncontext.ContextSetUserActivated(r, activated)
+		} else {
+			r = commoncontext.ContextSetUserActivated(r, false)
+		}
+
 		next.ServeHTTP(w, r)
 	})
+}
+
+func (m CommonMiddleware) IsActivated(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		activated := commoncontext.ContextGetUserActivated(r)
+
+		fmt.Println("activated", activated)
+
+		if !activated {
+			m.errors.ForbiddenActionResponse(w, r)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	}
 }

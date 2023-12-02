@@ -65,6 +65,6 @@ func (errors HttpErrors) InactiveAccountResponse(w http.ResponseWriter, r *http.
 }
 
 func (errors HttpErrors) ForbiddenActionResponse(w http.ResponseWriter, r *http.Request) {
-	message := "your don't have a permission to access this resource"
+	message := "you don't have a permission to access this resource"
 	errors.errorResponse(w, r, http.StatusForbidden, message)
 }

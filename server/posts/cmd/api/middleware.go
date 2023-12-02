@@ -15,3 +15,7 @@ func (app *application) authorize(handler http.HandlerFunc) http.HandlerFunc {
 
 	return app.commonMiddleware.Authorize(app.config.JWTSecret, handler)
 }
+
+func (app *application) isActivated(handler http.HandlerFunc) http.HandlerFunc {
+	return app.commonMiddleware.IsActivated(handler)
+}

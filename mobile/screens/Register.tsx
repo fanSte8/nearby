@@ -5,6 +5,7 @@ import { PRIMARY_COLOR } from "../constants"
 import { NearbyLogoLayout } from "../layouts"
 import { register } from "../api/users"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
+import { useUserStore } from "../storage/useUserStorage"
 
 export const RegisterScreen = ({ navigation }: any) => {
   const [firstName, setFirstName] = useState('')
@@ -12,14 +13,21 @@ export const RegisterScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  
+  const setUser = useUserStore(store => store.setUser)
+  const setToken = useUserStore(store => store.setToken)
+  const setIsLoggedIn = useUserStore(store => store.setIsLoggedIn)
 
   const handleRegister = async () => {
-    const { error } = await register(firstName, lastName, email, password)
+    const { data, error } = await register(firstName, lastName, email, password)
+
 
     if (error) {
       setError(error)
     } else {
-      navigation.navigate('Login', { from: 'register' })
+      setToken(data.token)
+      setUser(data.user)
+      setIsLoggedIn(true)
     }
   }
 

@@ -10,6 +10,22 @@ import (
 
 type envelope map[string]any
 
+func (app *application) handleHasUnseenNotifications(w http.ResponseWriter, r *http.Request) {
+	userId := commoncontext.ContextGetUserID(r)
+
+	seen, err := app.models.Notification.HasUnseenNotifications(userId)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	err = jsonutils.WriteJSON(w, http.StatusOK, envelope{"seen": seen}, nil)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+}
+
 func (app *application) handleGetNotifications(w http.ResponseWriter, r *http.Request) {
 	queryValues := r.URL.Query()
 	pagination := app.getPaginationFromQuery(queryValues)

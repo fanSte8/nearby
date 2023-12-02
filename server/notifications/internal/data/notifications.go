@@ -43,6 +43,7 @@ type INotificationModel interface {
 	Get(userId, postId int64, notificationType string) (*Notification, error)
 	GetList(toUserId int64, pagination Pagination) ([]*NotificationResponse, error)
 	MarkViewed(userId int64) error
+	HasUnseenNotifications(userId int64) (bool, error)
 }
 
 type NotificationModel struct {
@@ -174,4 +175,20 @@ func (m NotificationModel) MarkViewed(userId int64) error {
 	}
 
 	return nil
+}
+
+func (m NotificationModel) HasUnseenNotifications(userId int64) (bool, error) {
+	query := `SELECT BOOL_OR(seen = FALSE) as seen FROM notifications WHERE to_user_id = $1`
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var seen bool
+
+	err := m.db.QueryRowContext(ctx, query, userId).Scan(&seen)
+	if err != nil {
+		return false, err
+	}
+
+	return seen, nil
 }

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native"
 import { LabeledInput, Button, Alert } from "../components"
 import { PRIMARY_COLOR } from "../constants"
 import { NearbyLogoLayout } from "../layouts"
@@ -12,6 +12,7 @@ export const RegisterScreen = ({ navigation }: any) => {
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   
   const setUser = useUserStore(store => store.setUser)
@@ -19,6 +20,11 @@ export const RegisterScreen = ({ navigation }: any) => {
   const setIsLoggedIn = useUserStore(store => store.setIsLoggedIn)
 
   const handleRegister = async () => {
+    if (password !== confirmPassword) {
+      setError("Passwords do not match")
+      return
+    }
+
     const { data, error } = await register(firstName, lastName, email, password)
 
 
@@ -33,7 +39,7 @@ export const RegisterScreen = ({ navigation }: any) => {
 
   return (
     <NearbyLogoLayout>
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         {
           error && (
             <Alert type='warning' text={error} />
@@ -45,6 +51,7 @@ export const RegisterScreen = ({ navigation }: any) => {
             <LabeledInput value={lastName} onChangeText={setLastName} label="Last Name" placeholder="" secureText={false} />
             <LabeledInput value={email} onChangeText={setEmail} label="Email" placeholder="" secureText={false} />
             <LabeledInput label="Password" value={password} onChangeText={setPassword} placeholder="" secureText={true} />
+            <LabeledInput label="Confirm Password" value={confirmPassword} onChangeText={setConfirmPassword} placeholder="" secureText={true} />
           </View>
           <View style={styles.buttons}>
             <Button onPress={handleRegister} text="Register" />
@@ -53,7 +60,7 @@ export const RegisterScreen = ({ navigation }: any) => {
             </TouchableOpacity>
           </View>
         </KeyboardAwareScrollView>
-      </View>
+      </ScrollView>
     </NearbyLogoLayout>
   )
 }

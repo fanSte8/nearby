@@ -14,7 +14,7 @@ export const authorizedAxios = axios.create()
 authorizedAxios.interceptors.request.use(
   (config) => {
     const token = useUserStore.getState().token
-    authorizedAxios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    config.headers['Authorization'] = `Bearer ${token}`;
   
     return config;
   },

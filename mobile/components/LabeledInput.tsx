@@ -6,7 +6,7 @@ interface PropsType {
   value: string,
   onChangeText: (text: string) => void,
   placeholder: string,
-  secureText: boolean
+  secureText?: boolean
 }
 
 export const LabeledInput = ({ label, value, onChangeText, placeholder, secureText }: PropsType) => {
@@ -16,7 +16,7 @@ export const LabeledInput = ({ label, value, onChangeText, placeholder, secureTe
       value={value}
       onChangeText={onChangeText}
       placeholder={placeholder}
-      secureText={secureText}
+      secureText={secureText || false}
     />
   </View>
 }

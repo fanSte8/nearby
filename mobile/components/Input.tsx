@@ -4,7 +4,7 @@ interface PropsType {
   value: string,
   onChangeText: (text: string) => void,
   placeholder: string,
-  secureText: boolean
+  secureText?: boolean
 }
 
 export const Input = ({ value, onChangeText, placeholder, secureText }: PropsType) => {
@@ -13,7 +13,7 @@ export const Input = ({ value, onChangeText, placeholder, secureText }: PropsTyp
     value={value}
     onChangeText={onChangeText}
     placeholder={placeholder}
-    secureTextEntry={secureText}
+    secureTextEntry={secureText || false}
   />
 }
 
@@ -24,6 +24,6 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     padding: 8,
     fontSize: 16,
-    borderRadius: 8,
+    borderRadius: 8
   }
 })

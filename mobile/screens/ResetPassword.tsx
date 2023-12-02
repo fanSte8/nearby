@@ -24,7 +24,7 @@ export const ResetPasswordScreen = ({ navigation, route }: any) => {
   }
 
   return (
-    <NearbyLogoLayout>
+    <NearbyLogoLayout navigation={navigation}>
       <View style={styles.container}>
         <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
             {

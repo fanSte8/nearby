@@ -6,6 +6,7 @@ import { NearbyLogoLayout } from "../layouts"
 import { register } from "../api/users"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 import { useUserStore } from "../storage/useUserStorage"
+import { useNavigation } from "@react-navigation/native"
 
 export const RegisterScreen = ({ navigation }: any) => {
   const [firstName, setFirstName] = useState('')
@@ -38,7 +39,7 @@ export const RegisterScreen = ({ navigation }: any) => {
   }
 
   return (
-    <NearbyLogoLayout>
+    <NearbyLogoLayout navigation={navigation}>
       <ScrollView style={styles.container}>
         {
           error && (

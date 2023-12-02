@@ -21,7 +21,7 @@ export const ForgottenPasswordScreen = ({ navigation }: any) => {
   }
 
   return (
-    <NearbyLogoLayout>
+    <NearbyLogoLayout navigation={navigation}>
         <KeyboardAwareScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.container}>
             <Text style={styles.text}>Forgot your password? Enter your email and we'll send you a code you can use to reset it.</Text>

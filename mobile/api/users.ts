@@ -76,3 +76,23 @@ export const resetPassword = async (password: string, code: string): Promise<Res
     }
   }
 }
+
+export const sendActivationCode = async () => {
+  axios.get(URLS.USERS.ACTIVATE)
+}
+
+export const activateAccount = async (token: string): Promise<Response> => {
+  try {
+    const response = await axios.post(URLS.USERS.ACTIVATE, { token })
+
+    return {
+      data: response.data,
+      error: null
+    }
+  } catch(error: any) {
+    return {
+      data: null,
+      error: formatError(error)
+    }
+  }
+}

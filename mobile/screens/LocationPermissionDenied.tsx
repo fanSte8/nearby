@@ -2,7 +2,6 @@ import { View, Text } from "react-native"
 import { NearbyLogoLayout } from "../layouts"
 
 export const LocationPermissionDeniedScreen = () => {
-
   return (
     <NearbyLogoLayout>
       <Text style={{ fontWeight: 'bold', fontSize: 20, padding: 40 }}>

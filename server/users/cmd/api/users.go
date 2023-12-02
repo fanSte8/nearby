@@ -279,7 +279,7 @@ func (app *application) handleActivateAccount(w http.ResponseWriter, r *http.Req
 
 	v := validator.New()
 
-	v.Check(input.Token != "", "token", "Must be provided")
+	v.Check(input.Token != "", "token", "Code must be provided")
 	if !v.Valid() {
 		app.httpErrors.FailedValidationResponse(w, r, v.Errors)
 		return
@@ -291,7 +291,7 @@ func (app *application) handleActivateAccount(w http.ResponseWriter, r *http.Req
 	if err != nil || user.ID != tokenUser.ID {
 		switch {
 		case errors.Is(err, data.ErrRecordNotFound) || user.ID != tokenUser.ID:
-			v.AddError("token", "Incorrect or expired token")
+			v.AddError("token", "Incorrect or expired code")
 			app.httpErrors.FailedValidationResponse(w, r, v.Errors)
 		default:
 			app.httpErrors.ServerErrorResponse(w, r, err)

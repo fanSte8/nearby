@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"nearby/common/clients"
 	"nearby/notifications/internal/data"
 	"net/url"
@@ -50,7 +49,7 @@ func (app *application) combineNotificationsWithUserData(notifications []*data.N
 			var combinedNotification NotificationsWithUserData
 
 			userData, err := app.usersClient.GetUserByID(notification.UserID)
-			fmt.Println(userData, err)
+
 			if err != nil || userData == nil {
 				combinedNotification = NotificationsWithUserData{
 					Notification: notification,

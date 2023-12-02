@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/pascaldekloe/jwt"
 )
 
 type envelope = map[string]any
@@ -131,7 +130,13 @@ func (app *application) handleRegisterUser(w http.ResponseWriter, r *http.Reques
 		}
 	}()
 
-	err = jsonutils.WriteJSON(w, http.StatusCreated, envelope{"user": user}, nil)
+	jwt, err := app.generateJWT(user)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	err = jsonutils.WriteJSON(w, http.StatusCreated, envelope{"user": user, "token": jwt}, nil)
 	if err != nil {
 		app.httpErrors.ServerErrorResponse(w, r, err)
 		return
@@ -181,20 +186,13 @@ func (app *application) handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var claims jwt.Claims
-	claims.Subject = strconv.FormatInt(user.ID, 10)
-	claims.Set = map[string]any{"activated": user.Activated}
-	claims.Issued = jwt.NewNumericTime(time.Now())
-	claims.NotBefore = jwt.NewNumericTime(time.Now())
-	claims.Expires = jwt.NewNumericTime(time.Now().Add(24 * time.Hour))
-
-	jwtBytes, err := claims.HMACSign(jwt.HS256, []byte(app.config.JWTSecret))
+	token, err := app.generateJWT(user)
 	if err != nil {
 		app.httpErrors.ServerErrorResponse(w, r, err)
 		return
 	}
 
-	err = jsonutils.WriteJSON(w, http.StatusOK, envelope{"token": string(jwtBytes), "user": user}, nil)
+	err = jsonutils.WriteJSON(w, http.StatusOK, envelope{"token": token, "user": user}, nil)
 	if err != nil {
 		app.httpErrors.ServerErrorResponse(w, r, err)
 		return

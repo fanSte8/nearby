@@ -1,5 +1,12 @@
 import { StyleSheet, Text, View } from 'react-native'
-import { ActivateScreen, ForgottenPasswordScreen, HomeScreen, LocationPermissionDeniedScreen, LoginScreen, RegisterScreen, ResetPasswordScreen } from './screens'
+import {
+  ChangePasswordScreen,
+  ForgottenPasswordScreen,
+  LocationPermissionDeniedScreen,
+  LoginScreen,
+  RegisterScreen,
+  ResetPasswordScreen
+} from './screens'
 import * as Location from 'expo-location';  
 
 import { NavigationContainer } from '@react-navigation/native'
@@ -29,7 +36,7 @@ const App = () => {
       {
         isLoggedIn ? (
           <Stack.Navigator initialRouteName='Home' screenOptions={{ headerShown: false }}>
-            <Stack.Screen name='Home' component={ActivateScreen} />
+            <Stack.Screen name='Home' component={ChangePasswordScreen} />
           </Stack.Navigator>
         ) : (
           <Stack.Navigator initialRouteName='Login' screenOptions={{ headerShown: false }}>

@@ -15,6 +15,7 @@ export const ActivateScreen = ({ navigation }: any) => {
     const { error } = await activateAccount(code)
 
     if (error) {
+      setAlert('')
       setError(error)
     } else {
       setError('')
@@ -25,8 +26,12 @@ export const ActivateScreen = ({ navigation }: any) => {
   return (
     <NearbyLogoLayout navigation={navigation}>
       <View style={styles.container}>
-        <Alert type='warning' text={error} />
-        <Alert type='success' text={alert} />
+        {
+          error && <Alert type='warning' text={error} />
+        }
+        {
+          alert && <Alert type='success' text={alert} />
+        }
         <Text style={styles.text}>An activation code has been sent to your email. Enter it here to activate your account</Text>
         <Input value={code} onChangeText={setCode} placeholder="code" />
         <Button onPress={handleActivateAccount} text="Activate" />

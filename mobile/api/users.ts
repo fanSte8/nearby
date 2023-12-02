@@ -96,3 +96,21 @@ export const activateAccount = async (token: string): Promise<Response> => {
     }
   }
 }
+
+
+export const changePassword = async (oldPassword: string, password: string): Promise<Response> => {
+  try {
+    const response = await axios.post(URLS.USERS.CHANGE_PASSWORD, { password, oldPassword })
+
+    return {
+      data: response.data,
+      error: null
+    }
+  } catch(error: any) {
+    return {
+      data: null,
+      error: formatError(error)
+    }
+  }
+}
+

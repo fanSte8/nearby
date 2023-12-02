@@ -24,6 +24,13 @@ func (app *application) handleGetNotifications(w http.ResponseWriter, r *http.Re
 
 	notificationsWithUserData := app.combineNotificationsWithUserData(notifications)
 
+	go func() {
+		err := app.models.Notification.MarkViewed(userId)
+		if err != nil {
+			app.logger.Error("Error updating notifications", "error", err)
+		}
+	}()
+
 	err = jsonutils.WriteJSON(w, http.StatusOK, envelope{"notifications": notificationsWithUserData}, nil)
 	if err != nil {
 		app.httpErrors.ServerErrorResponse(w, r, err)

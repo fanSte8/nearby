@@ -34,6 +34,7 @@ type NotificationResponse struct {
 	PostID    int64     `json:"postId"`
 	Type      string    `json:"type"`
 	Count     int       `json:"count"`
+	Seen      bool      `json:"seen"`
 	CreatedAt time.Time `json:"createdAt"`
 }
 
@@ -107,12 +108,13 @@ func (m NotificationModel) GetList(toUserId int64, pagination Pagination) ([]*No
 	SELECT
 	    post_id,
 	    MIN(from_user_id) AS user_id,
+		BOOL_OR(seen) AS seen,
 	    type,
 	    MAX(created_at) AS latest_notification,
 	    COUNT(*) AS count
 	FROM notifications
 	WHERE to_user_id=$1
-	GROUP BY post_id, type	
+	GROUP BY post_id, type
 	LIMIT $2 OFFSET $3`
 
 	args := []any{toUserId, pagination.limit(), pagination.offset()}
@@ -140,6 +142,7 @@ func (m NotificationModel) GetList(toUserId int64, pagination Pagination) ([]*No
 		err := rows.Scan(
 			&notification.PostID,
 			&notification.UserID,
+			&notification.Seen,
 			&notification.Type,
 			&notification.CreatedAt,
 			&notification.Count,

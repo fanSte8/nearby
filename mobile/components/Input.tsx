@@ -1,19 +1,21 @@
-import { TextInput, View, Text, StyleSheet } from "react-native"
+import { TextInput, View, Text, StyleSheet, KeyboardTypeOptions } from "react-native"
 
 interface PropsType {
   value: string,
   onChangeText: (text: string) => void,
   placeholder: string,
   secureText?: boolean
+  keyboardType?: KeyboardTypeOptions
 }
 
-export const Input = ({ value, onChangeText, placeholder, secureText }: PropsType) => {
+export const Input = ({ value, onChangeText, placeholder, secureText, keyboardType }: PropsType) => {
   return <TextInput 
     style={styles.inputStyle}
     value={value}
     onChangeText={onChangeText}
     placeholder={placeholder}
     secureTextEntry={secureText || false}
+    keyboardType={keyboardType || undefined}
   />
 }
 

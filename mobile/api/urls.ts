@@ -5,6 +5,7 @@ export const URLS = {
     FORGOTTEN_PASSWORD: `${process.env.EXPO_PUBLIC_BASE_URL}/users/forgotten-password`,
     RESET_PASSWORD: `${process.env.EXPO_PUBLIC_BASE_URL}/users/reset-password`,
     CHANGE_PASSWORD: `${process.env.EXPO_PUBLIC_BASE_URL}/users/change-password`,
+    CHANGE_RADIUS: `${process.env.EXPO_PUBLIC_BASE_URL}/users/posts-radius`,
     ACTIVATE: `${process.env.EXPO_PUBLIC_BASE_URL}/users/activate`,
   }
 }

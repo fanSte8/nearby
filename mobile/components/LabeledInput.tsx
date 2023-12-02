@@ -1,4 +1,4 @@
-import { View, Text } from "react-native"
+import { View, Text, KeyboardTypeOptions } from "react-native"
 import { Input } from "./Input"
 
 interface PropsType {
@@ -6,10 +6,11 @@ interface PropsType {
   value: string,
   onChangeText: (text: string) => void,
   placeholder: string,
-  secureText?: boolean
+  secureText?: boolean,
+  keyboardType?: KeyboardTypeOptions
 }
 
-export const LabeledInput = ({ label, value, onChangeText, placeholder, secureText }: PropsType) => {
+export const LabeledInput = ({ label, value, onChangeText, placeholder, secureText, keyboardType }: PropsType) => {
   return <View style={{ padding: 10 }}>
     <Text style={{ paddingLeft: 5 }}>{label}</Text>
     <Input 
@@ -17,6 +18,7 @@ export const LabeledInput = ({ label, value, onChangeText, placeholder, secureTe
       onChangeText={onChangeText}
       placeholder={placeholder}
       secureText={secureText || false}
+      keyboardType={keyboardType || undefined}
     />
   </View>
 }

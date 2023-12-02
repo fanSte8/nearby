@@ -1,6 +1,8 @@
 import { StyleSheet, Text, View } from 'react-native'
 import {
+  ActivateScreen,
   ChangePasswordScreen,
+  ChangeRadius,
   ForgottenPasswordScreen,
   LocationPermissionDeniedScreen,
   LoginScreen,
@@ -36,7 +38,7 @@ const App = () => {
       {
         isLoggedIn ? (
           <Stack.Navigator initialRouteName='Home' screenOptions={{ headerShown: false }}>
-            <Stack.Screen name='Home' component={ChangePasswordScreen} />
+            <Stack.Screen name='Home' component={ActivateScreen} />
           </Stack.Navigator>
         ) : (
           <Stack.Navigator initialRouteName='Login' screenOptions={{ headerShown: false }}>

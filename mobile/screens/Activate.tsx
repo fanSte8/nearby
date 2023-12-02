@@ -1,15 +1,21 @@
-import { useState } from "react";
-import { Alert, Button, Input, LabeledInput } from "../components"
+import { useEffect, useState } from "react";
+import { Alert, Button, Input } from "../components"
 import { NearbyLogoLayout } from "../layouts"
 import { StyleSheet, TouchableOpacity, Text, View } from "react-native";
 import { PRIMARY_COLOR } from "../constants";
-import { useNavigation } from "@react-navigation/native";
 import { activateAccount, sendActivationCode } from "../api/users";
+import { useUserStore } from "../storage/useUserStorage";
 
 export const ActivateScreen = ({ navigation }: any) => {
   const [code, setCode] = useState('')
   const [error, setError] = useState('')
   const [alert, setAlert] = useState('')
+
+  const user = useUserStore(store => store.user)
+
+  useEffect(() => {
+    sendActivationCode
+  }, [])
 
   const handleActivateAccount = async () => {
     const { error } = await activateAccount(code)
@@ -21,6 +27,16 @@ export const ActivateScreen = ({ navigation }: any) => {
       setError('')
       setAlert('Your account has been activated. You need to log out for the changes to take effect.')
     }
+  }
+
+  if (user?.activated) {
+    return (
+      <NearbyLogoLayout navigation={navigation}>
+        <Text style={styles.text}>
+          This account has already been activated
+        </Text>
+      </NearbyLogoLayout>
+    )
   }
 
   return (

@@ -4,6 +4,7 @@ import {
   ChangePasswordScreen,
   ChangeRadius,
   ForgottenPasswordScreen,
+  HomeScreen,
   LocationPermissionDeniedScreen,
   LoginScreen,
   RegisterScreen,
@@ -38,7 +39,7 @@ const App = () => {
       {
         isLoggedIn ? (
           <Stack.Navigator initialRouteName='Home' screenOptions={{ headerShown: false }}>
-            <Stack.Screen name='Home' component={ActivateScreen} />
+            <Stack.Screen name='Home' component={HomeScreen} />
           </Stack.Navigator>
         ) : (
           <Stack.Navigator initialRouteName='Login' screenOptions={{ headerShown: false }}>

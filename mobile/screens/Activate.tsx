@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"
 import { Alert, Button, Input } from "../components"
 import { NearbyLogoLayout } from "../layouts"
-import { StyleSheet, TouchableOpacity, Text, View } from "react-native";
-import { PRIMARY_COLOR } from "../constants";
-import { activateAccount, sendActivationCode } from "../api/users";
-import { useUserStore } from "../storage/useUserStorage";
+import { StyleSheet, TouchableOpacity, Text, View } from "react-native"
+import { PRIMARY_COLOR } from "../constants"
+import { activateAccount, sendActivationCode } from "../api/users"
+import { useUserStore } from "../storage/useUserStorage"
 
 export const ActivateScreen = ({ navigation }: any) => {
   const [code, setCode] = useState('')
@@ -77,4 +77,4 @@ const styles = StyleSheet.create({
   linkText: {
     color: PRIMARY_COLOR
   }
-});
+})

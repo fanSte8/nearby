@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { formatDistance, formatTime } from '../utils';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { PRIMARY_COLOR } from '../constants';
-import { likePost } from '../api/posts';
+import React, { useEffect, useState } from 'react'
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native'
+import { formatDistance, formatTime } from '../utils'
+import AntDesign from '@expo/vector-icons/AntDesign'
+import FontAwesome from '@expo/vector-icons/FontAwesome'
+import { PRIMARY_COLOR } from '../constants'
+import { likePost } from '../api/posts'
 
-export const Post = ({ data }: any) => {
+export const Post = ({ data, navigation, enableNavToDetailsScreen }: any) => {
   const [liked, setLiked] = useState(false)
   const [likes, setLikes] = useState(0)
 
@@ -28,7 +28,7 @@ export const Post = ({ data }: any) => {
       comments,
       createdAt
     }
-  } = data;
+  } = data
 
   const handlePostLiked = async () => {
     const success = likePost(data.post.id)
@@ -41,6 +41,10 @@ export const Post = ({ data }: any) => {
       setLikes(likes => likes + 1)
     }
     setLiked(liked => !liked)
+  }
+
+  const goToPostDetails = () => {
+    if (enableNavToDetailsScreen) navigation.navigate('PostDetails', { data })
   }
 
   return (
@@ -64,21 +68,23 @@ export const Post = ({ data }: any) => {
           </View>
         </View>
       </View>
-      <Text style={{ margin: 10 }}>{description}</Text>
-      {imageUrl && <Image source={{ uri: imageUrl }} style={styles.postImage} />}
+      <TouchableOpacity onPress={goToPostDetails} disabled={!enableNavToDetailsScreen} activeOpacity={1}>
+        <Text style={{ margin: 10 }}>{description}</Text>
+        <Image source={{ uri: imageUrl }} style={styles.postImage} />
+      </TouchableOpacity>
       <View style={styles.actionButtonsContainer}>
        <TouchableOpacity style={styles.button} onPress={handlePostLiked}>
           <Text style={liked ? styles.buttonTextWithPrimaryColor : styles.buttonText}>{likes}</Text>
           <AntDesign name='like2' size={18} color={liked ? PRIMARY_COLOR : '#000'} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={goToPostDetails} disabled={!enableNavToDetailsScreen} activeOpacity={1}>
           <Text style={styles.buttonText}>{comments}</Text>
           <FontAwesome name='comment-o' size={18} />
         </TouchableOpacity>
       </View>
     </View>
-  );
-};
+  )
+}
 
 
 const styles = StyleSheet.create({
@@ -122,4 +128,4 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginHorizontal: 5,
   },
-});
+})

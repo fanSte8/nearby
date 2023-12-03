@@ -10,6 +10,7 @@ export const URLS = {
   },
   POSTS: {
     GET_ALL: `${process.env.EXPO_PUBLIC_BASE_URL}/posts`,
-    LIKE: `${process.env.EXPO_PUBLIC_BASE_URL}/posts/:id/like`
+    LIKES: `${process.env.EXPO_PUBLIC_BASE_URL}/posts/:id/likes`,
+    COMMENTS: `${process.env.EXPO_PUBLIC_BASE_URL}/posts/:id/comments`
   }
 }

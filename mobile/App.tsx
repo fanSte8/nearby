@@ -7,15 +7,16 @@ import {
   HomeScreen,
   LocationPermissionDeniedScreen,
   LoginScreen,
+  PostDetails as PostDetailsScreen,
   RegisterScreen,
   ResetPasswordScreen
 } from './screens'
-import * as Location from 'expo-location';  
+import * as Location from 'expo-location'  
 
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { useUserStore } from './storage/useUserStorage'
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'
 
 const Stack = createNativeStackNavigator()
 
@@ -25,10 +26,10 @@ const App = () => {
 
   useEffect(() => {
     (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
+      let { status } = await Location.requestForegroundPermissionsAsync()
       setLocationPermission(status === 'granted')
-    })();
-  });
+    })()
+  })
 
   if (!locationPermission) {
     return <LocationPermissionDeniedScreen />
@@ -40,6 +41,7 @@ const App = () => {
         isLoggedIn ? (
           <Stack.Navigator initialRouteName='Home' screenOptions={{ headerShown: false }}>
             <Stack.Screen name='Home' component={HomeScreen} />
+            <Stack.Screen name="PostDetails" component={PostDetailsScreen} />
           </Stack.Navigator>
         ) : (
           <Stack.Navigator initialRouteName='Login' screenOptions={{ headerShown: false }}>

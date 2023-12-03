@@ -1,0 +1,113 @@
+import React, { useEffect, useState } from "react"
+import { FlatList, TextInput, TouchableOpacity, View, Text, StyleSheet } from "react-native"
+import Ionicons from '@expo/vector-icons/Ionicons'
+import { Post, Comment, Button, Input } from "../components"
+import { PRIMARY_COLOR } from "../constants"
+import { SafeAreaView } from "react-native-safe-area-context"
+import { getComments, postComment } from "../api/posts"
+import { useUserStore } from "../storage/useUserStorage"
+
+export const PostDetails = ({ navigation, route }: any) => {
+  const pageSize = 10
+  const post = route.params.data
+
+  const user = useUserStore(store => store.user)
+
+  const [comments, setComments] = useState<any[]>([])
+  const [newComment, setNewComment] = useState('')
+  const [page, setPage] = useState(1)
+  const [hasMoreComments, setHasMoreComments] = useState(true)
+
+  useEffect(() => {
+    handleLoadMoreComments()
+  }, [])
+
+  const handleLoadMoreComments = async () => {
+    if (!hasMoreComments) return
+
+    const data = await getComments(post.post.id, page, pageSize)
+
+    setPage(p => p + 1)
+    if (!data.comments || data.comments.length < pageSize) {
+      setHasMoreComments(false)
+    }
+
+    setComments([ ...comments, ...data.comments ])
+  }
+
+  const handleAddComment = async () => {
+    const res = await postComment(post.post.id, newComment)
+    
+    if (res) {
+      setNewComment('')
+      setComments([{ user, comment: res }, ...comments ])
+    }
+  }
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <TouchableOpacity onPress={navigation.goBack} style={{ alignSelf: 'flex-start' }}>
+        <Ionicons name="chevron-back" color={"black"} size={32}/>
+      </TouchableOpacity>
+      <View style={{width: '100%'}}>
+        <Post data={post} navigation={navigation} enableNavToDetailsScreen={false} />
+      </View>
+      {user?.activated && (
+        <View style={styles.addCommentContainer}>
+          <Input
+            placeholder="Add a comment..."
+            value={newComment}
+            onChangeText={(text) => setNewComment(text)}
+          />
+          <Button text="Post" onPress={handleAddComment} />
+        </View>
+      )}
+      <View style={styles.commentsList}>
+        <FlatList
+          data={comments}
+          keyExtractor={(item) => item.comment.id}
+          renderItem={({ item }) => <Comment comment={item} />}
+          onEndReached={handleLoadMoreComments}
+          onEndReachedThreshold={0.1}
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
+    </SafeAreaView>
+  )
+}
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'white',
+    flex: 1,
+    alignItems: 'center',
+    width: '100%'
+  },
+  addCommentContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '75%',
+  },
+  commentInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 8,
+    marginRight: 10,
+  },
+  commentButton: {
+    backgroundColor: PRIMARY_COLOR,
+    borderRadius: 5,
+  },
+  commentButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  commentsList: {
+    borderTopWidth: 1,
+    borderColor: '#ccc',
+    width: '100%'
+  }
+})

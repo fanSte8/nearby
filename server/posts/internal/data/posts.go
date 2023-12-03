@@ -137,13 +137,13 @@ func (m PostModel) GetById(id int64) (*Post, error) {
 
 func (m PostModel) GetPosts(sort string, userId int64, userLatitude, userLongitude string, radius_meters int, pagination Pagination) ([]*PostResponse, error) {
 	closestPostsQuery := `
-	SELECT id, user_id, description, image_url, distance, liked, likes, comments, created_at, updated_at FROM (
+	SELECT id, user_id, description, image_url, distance, COALESCE(liked, FALSE) as liked, likes, comments, created_at, updated_at FROM (
 		SELECT 
 			posts.id,
 			posts.user_id,
 			posts.description,
 			posts.image_url,
-			CASE WHEN likes.user_id = $1 THEN TRUE ELSE FALSE END AS liked,
+			BOOL_OR(likes.user_id = $1) AS liked,
 			COUNT(DISTINCT likes.user_id) AS likes,
 			COUNT(DISTINCT comments.id) AS comments,
 			ST_Distance(location::geography, ST_MakePoint($2, $3)::geography) AS distance,
@@ -152,21 +152,21 @@ func (m PostModel) GetPosts(sort string, userId int64, userLatitude, userLongitu
 		FROM posts
 		LEFT JOIN comments ON comments.post_id = posts.id
 		LEFT JOIN likes ON likes.post_id = posts.id
-		GROUP BY posts.id, likes.user_id
+		GROUP BY posts.id
 	) 
 	WHERE distance < $4 
 	ORDER BY distance ASC
 	LIMIT $5 OFFSET $6`
 
 	latestPostsQuery := `
-	SELECT id, user_id, description, image_url, distance, liked, likes, comments, created_at, updated_at FROM (
+	SELECT id, user_id, description, image_url, distance, COALESCE(liked, FALSE) as liked, likes, comments, created_at, updated_at FROM (
 		SELECT 
 			posts.id,
 			posts.user_id,
 			posts.description,
 			posts.image_url,
-			CASE WHEN likes.user_id = $1 THEN TRUE ELSE FALSE END AS liked,
-			COUNT(DISTINCT likes.user_id) AS likes,
+			BOOL_OR(likes.user_id = $1) AS liked,
+			COUNT(DISTINCT likes.id) AS likes,
 			COUNT(DISTINCT comments.id) AS comments,
 			ST_Distance(location::geography, ST_MakePoint($2, $3)::geography) AS distance,
 			posts.created_at,
@@ -174,30 +174,30 @@ func (m PostModel) GetPosts(sort string, userId int64, userLatitude, userLongitu
 		FROM posts
 		LEFT JOIN comments ON comments.post_id = posts.id
 		LEFT JOIN likes ON likes.post_id = posts.id
-		GROUP BY posts.id, likes.user_id
+		GROUP BY posts.id
 	) 
 	WHERE distance < $4 
 	ORDER BY created_at DESC
 	LIMIT $5 OFFSET $6`
 
 	popularPostsQuery := `
-	SELECT id, user_id, description, image_url, distance, liked, likes, comments, created_at, updated_at FROM (
+	SELECT id, user_id, description, image_url, distance, COALESCE(liked, FALSE) as liked, likes, comments, created_at, updated_at FROM (
 		SELECT 
 			posts.id,
 			posts.user_id,
 			posts.description,
 			posts.image_url,
-			CASE WHEN likes.user_id = $1 THEN TRUE ELSE FALSE END AS liked,
-			COUNT(DISTINCT likes.user_id) AS likes,
+			BOOL_OR(likes.user_id = $1) AS liked,
+			COUNT(DISTINCT likes.id) AS likes,
 			COUNT(DISTINCT comments.id) AS comments,
 			ST_Distance(location::geography, ST_MakePoint($2, $3)::geography) AS distance,
-			(COUNT(DISTINCT likes.user_id) + COUNT(DISTINCT comments.id)) / POWER(EXTRACT(EPOCH FROM NOW() - posts.created_at), 2) AS score,
+			(COUNT(DISTINCT likes.id) + COUNT(DISTINCT comments.id)) / POWER(EXTRACT(EPOCH FROM NOW() - posts.created_at), 2) AS score,
 			posts.created_at,
 			posts.updated_at
 		FROM posts
 		LEFT JOIN comments ON comments.post_id = posts.id
 		LEFT JOIN likes ON likes.post_id = posts.id
-		GROUP BY posts.id, likes.user_id
+		GROUP BY posts.id
 	) 
 	WHERE distance < $4 
 	ORDER BY score DESC

@@ -8,7 +8,7 @@ import { useUserStore } from "../storage/useUserStorage"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 
 export const LoginScreen = ({ navigation, route }: any) => {
-  const fromScreen = route?.params?.from;
+  const fromScreen = route?.params?.from
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

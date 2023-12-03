@@ -83,6 +83,7 @@ func (m CommentModel) GetList(postId int64, pagination Pagination) ([]*Comment, 
 	SELECT id, user_id, post_id, text 
 	FROM comments
 	WHERE post_id=$1
+	ORDER BY created_at DESC
 	LIMIT $2 OFFSET $3`
 
 	args := []any{postId, pagination.limit(), pagination.offset()}

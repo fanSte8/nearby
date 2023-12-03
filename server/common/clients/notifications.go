@@ -66,7 +66,6 @@ func (n NotificationsClient) CreateNotification(input CreateNotificationInput) e
 
 	if response.StatusCode != http.StatusOK {
 		defer response.Body.Close()
-		n.logger.Error("Couldn't create notification", "statusCode", response.StatusCode, "responseBody", response.Body)
 		return errors.New("couldn't send email")
 	}
 

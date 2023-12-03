@@ -80,4 +80,4 @@ const styles = StyleSheet.create({
   linkText: {
     color: PRIMARY_COLOR
   }
-});
+})

@@ -9,12 +9,13 @@ import DropdownPicker from 'react-native-dropdown-picker'
 import * as Location from 'expo-location'
 import { usePostsStore } from "../storage/usePostsStorage"
 import { hasSeenNotifications as hasUnseenNotifications } from "../api/notifications"
-import { shallow } from 'zustand/shallow'
+import { useUserStore } from "../storage/useUserStorage"
 
 export const HomeScreen = ({ navigation, route }: any) => {
   const posts = usePostsStore(store => store.posts)
   const addPosts = usePostsStore(store => store.addPosts)
   const reset = usePostsStore(store => store.reset)
+  const user = useUserStore(store => store.user)
 
   const pageSize = 20
   const [page, setPage] = useState(1)
@@ -145,9 +146,11 @@ export const HomeScreen = ({ navigation, route }: any) => {
         onEndReached={() => fetchPosts(page)}
         onEndReachedThreshold={0.5}
       />
-      <TouchableOpacity style={styles.addButton}  onPress={() => navigation.navigate('CreatePost')}>
-        <Text style={styles.addButtonIcon}>+</Text>
-      </TouchableOpacity>
+      {user?.activated && (
+        <TouchableOpacity style={styles.addButton}  onPress={() => navigation.navigate('CreatePost')}>
+          <Text style={styles.addButtonIcon}>+</Text>
+        </TouchableOpacity>
+      )}
     </SafeAreaView>
   )
 }

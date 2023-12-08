@@ -62,3 +62,12 @@ export const createPost = async (description: string, photo: string, latitude: s
     return false
   }
 }
+
+export const getPostById = async (id: number) => {
+  try {
+    const response = await axios.get(URLS.POSTS.POST_BY_ID.replace(':id', String(id)))
+    return response.data
+  } catch(error) {
+    return null
+  }
+}

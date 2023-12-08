@@ -1,5 +1,5 @@
 import { getPosts } from "../api/posts"
-import { Post, SidePanel } from "../components"
+import { Loading, Post, SidePanel } from "../components"
 import React, { useState, useEffect, useRef } from 'react'
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, Modal } from 'react-native'
 import { Entypo, Ionicons } from '@expo/vector-icons' 
@@ -46,8 +46,6 @@ export const HomeScreen = ({ navigation, route }: any) => {
     })()
   }, [sortBy])
 
-  const { latitude, longitude } = useLocation()
-
   useEffect(() => {
     (async () => {
       const res = await hasUnseenNotifications()
@@ -65,8 +63,10 @@ export const HomeScreen = ({ navigation, route }: any) => {
       return
     }
 
+    const location = await Location.getCurrentPositionAsync({})
+
     setIsLoadingPosts(true)
-    const res = await getPosts(sortBy, longitude, latitude, nextPage, pageSize)
+    const res = await getPosts(sortBy, location.coords.longitude, location.coords.latitude, nextPage, pageSize)
     const newPosts = res?.posts || []
 
     if (newPosts.length < pageSize) {
@@ -134,10 +134,11 @@ export const HomeScreen = ({ navigation, route }: any) => {
         data={posts}
         ref={flatListRef}
         keyExtractor={(item) => item.post.id }
-        renderItem={({ item }) =><Post id={item.post.id} navigation={navigation} enableNavToDetailsScreen={true} />}
+        renderItem={({ item }) =><Post id={item.post.id} navigation={navigation} enableNavToDetailsScreen={true} fetchFromAPI={false} />}
         onEndReached={() => fetchPosts(page)}
         onEndReachedThreshold={0.5}
       />
+      {isLoadingPosts && <Loading />}
       {user?.activated && (
         <TouchableOpacity style={styles.addButton}  onPress={() => navigation.navigate('CreatePost')}>
           <Text style={styles.addButtonIcon}>+</Text>

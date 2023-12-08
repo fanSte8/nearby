@@ -4,17 +4,35 @@ import { formatDistance, formatTime } from '../utils'
 import AntDesign from '@expo/vector-icons/AntDesign'
 import FontAwesome from '@expo/vector-icons/FontAwesome'
 import { PRIMARY_COLOR } from '../constants'
-import { likePost } from '../api/posts'
+import { getPostById, likePost } from '../api/posts'
 import { usePostsStore } from '../storage/usePostsStorage'
+import { Loading } from './Loading'
 
-export const Post = ({ id, navigation, enableNavToDetailsScreen }: any) => {
+export const Post = ({ id, navigation, enableNavToDetailsScreen, fetchFromAPI = false }: any) => {
   const setLiked = usePostsStore(store => store.setLiked)
   const incrementPostLikes = usePostsStore(store => store.incrementPostLikes)
   const decrementPostLikes = usePostsStore(store => store.decrementPostLikes)
-  const post = usePostsStore(store => store.getPostById(id))
+  const postFromState = usePostsStore(store => store.getPostById(id))
 
+  const [post, setPost] = useState<any>()
   const [imgWidth, setImgWidth] = useState(1)
   const [imgHeight, setImgHeight] = useState(1)
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    (
+      async () => {
+        let showPost
+        setLoading(true)
+        if (fetchFromAPI) {
+          showPost = await getPostById(id)
+        } else {
+          showPost = postFromState
+        }
+        setPost(showPost)
+        setLoading(false)
+      })()
+  }, [])
 
   if (!post) {
     return null
@@ -27,6 +45,11 @@ export const Post = ({ id, navigation, enableNavToDetailsScreen }: any) => {
     } else {
       decrementPostLikes(id)
     }
+
+    setPost((state: any) => ({ 
+      ...state, 
+      post: { ...state.post, liked: !state.post.liked, likes: state.post.likes + (state.post.liked ? -1 : 1 ) } })
+    )
 
     await likePost(id)
   }
@@ -46,6 +69,10 @@ export const Post = ({ id, navigation, enableNavToDetailsScreen }: any) => {
         console.error('Error getting image dimensions:', error)
       }
     )
+  }
+
+  if (loading) {
+    return <Loading />
   }
 
   return (

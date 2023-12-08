@@ -11,11 +11,13 @@ export const URLS = {
     USER_BY_ID: `${process.env.EXPO_PUBLIC_BASE_URL}/users/:id`
   },
   POSTS: {
+    POST_BY_ID: `${process.env.EXPO_PUBLIC_BASE_URL}/posts/:id`,
     POSTS: `${process.env.EXPO_PUBLIC_BASE_URL}/posts`,
     LIKES: `${process.env.EXPO_PUBLIC_BASE_URL}/posts/:id/likes`,
     COMMENTS: `${process.env.EXPO_PUBLIC_BASE_URL}/posts/:id/comments`,
   },
   NOTIFICATIONS: {
-    HAS_UNSEEN: `${process.env.EXPO_PUBLIC_BASE_URL}/notifications/seen`
+    NOTIFICATIONS: `${process.env.EXPO_PUBLIC_BASE_URL}/notifications`,
+    SEEN: `${process.env.EXPO_PUBLIC_BASE_URL}/notifications/seen`
   }
 }

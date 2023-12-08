@@ -42,7 +42,6 @@ const styles = StyleSheet.create({
     paddingTop: 40
   },
   header: {
-    padding: 40,
     alignItems: 'center',
     marginBottom: 20
   },

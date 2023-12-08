@@ -6,6 +6,8 @@ import { Ionicons } from '@expo/vector-icons'
 import { PRIMARY_COLOR } from '../constants'
 import { getUserById, uploadAvatar } from '../api/users'
 import * as ImagePicker from 'expo-image-picker'
+import { Loading } from '../components'
+import { BasicLayout } from '../layouts'
 
 export const AccountScreen = ({ navigation, route }: any) => {
   const user = useUserStore(state => state.user)
@@ -13,6 +15,7 @@ export const AccountScreen = ({ navigation, route }: any) => {
   const [firstName, setFirstName] = useState<string>('')
   const [lastName, setLastName] = useState<string>('')
   const [email, setEmail] = useState<string>('')
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     (async () => {
@@ -59,11 +62,12 @@ export const AccountScreen = ({ navigation, route }: any) => {
     }
   }
 
+  if (loading) {
+    return <Loading />
+  }
+
   return (
-    <SafeAreaView>
-      <TouchableOpacity onPress={navigation.goBack} style={{ alignSelf: 'flex-start' }}>
-        <Ionicons name="chevron-back" color={"black"} size={32}/>
-      </TouchableOpacity>
+    <BasicLayout navigation={navigation} title={"User"}>
       <View style={{ alignItems: 'center', marginTop: 20 }}>
         <Image source={avatar ? { uri: avatar } : require('../assets/default-avatar.png')} style={{ width: 150, height: 150, borderRadius: 75 }} />
         {isCurrentUser && (
@@ -71,9 +75,9 @@ export const AccountScreen = ({ navigation, route }: any) => {
             <Text style={{ color: PRIMARY_COLOR, marginTop: 10 }}>Change avatar</Text>
           </TouchableOpacity>
         )}
-        <Text style={{ fontSize: 24, marginTop: 10 }}>{`${user?.firstName} ${user?.lastName}`}</Text>
-        <Text style={{ fontSize: 18, marginTop: 5 }}>{user?.email}</Text>
+        <Text style={{ fontSize: 24, marginTop: 10 }}>{`${firstName} ${lastName}`}</Text>
+        <Text style={{ fontSize: 18, marginTop: 5 }}>{email}</Text>
       </View>
-    </SafeAreaView>
+    </BasicLayout>
   )
 }

@@ -451,7 +451,13 @@ func (app *application) handleProfilePictureUpload(w http.ResponseWriter, r *htt
 		return
 	}
 
-	err = jsonutils.WriteJSON(w, http.StatusOK, envelope{"message": "Profile picture set"}, nil)
+	url, err := app.storage.GetURL(user.ImageUrl)
+	if err != nil {
+		app.logger.Error("Error getting user profile picture", "error", err)
+		url = ""
+	}
+
+	err = jsonutils.WriteJSON(w, http.StatusOK, envelope{"imageUrl": url}, nil)
 	if err != nil {
 		app.httpErrors.ServerErrorResponse(w, r, err)
 		return

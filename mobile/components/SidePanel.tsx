@@ -6,10 +6,11 @@ import { useUserStore } from '../storage/useUserStorage'
 
 export const SidePanel = ({ onClose, navigation }: any) => {
   const reset = useUserStore(store => store.reset)
+  const user = useUserStore(store => store.user)
 
-  const navigateTo = (location: string) => {
+  const navigateTo = (location: string, params?: any) => {
     onClose()
-    navigation.navigate(location)
+    navigation.navigate(location, params)
   }
 
   return (
@@ -17,7 +18,7 @@ export const SidePanel = ({ onClose, navigation }: any) => {
       <TouchableOpacity onPress={onClose} style={styles.closeButton}>
         <Entypo name="cross" size={24} color="black" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.sidePanelButton} onPress={() => navigateTo('Account')}>
+      <TouchableOpacity style={styles.sidePanelButton} onPress={() => navigateTo('Account', { id: user?.id })}>
         <Text style={styles.text}>Account</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.sidePanelButton} onPress={() => navigateTo('Activate')}>

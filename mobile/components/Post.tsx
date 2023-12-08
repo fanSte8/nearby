@@ -13,11 +13,11 @@ export const Post = ({ id, navigation, enableNavToDetailsScreen }: any) => {
   const decrementPostLikes = usePostsStore(store => store.decrementPostLikes)
   const post = usePostsStore(store => store.getPostById(id))
 
+  console.log(post.user)
+
   if (!post) {
     return null
   }
-
-  const [updateFlag, setUpdateFlag] = useState(0)
 
   const handlePostLiked = async () => {
     setLiked(id)
@@ -37,17 +37,21 @@ export const Post = ({ id, navigation, enableNavToDetailsScreen }: any) => {
   return (
     <View style={styles.postContainer}>
       <View style={styles.userInfoContainer}>
-        {post.user.avatarUrl ?(<Image
-          source={{ uri: post.user.avatarUrl }}
-          style={styles.avatar}
-        />) : (
-          <Image
-            source={require('../assets/default-avatar.png')}
+        <TouchableOpacity activeOpacity={1} onPress={() => navigation.navigate('Account', { id: post.user.id })}>
+          {post.user.imageUrl ?(<Image
+            source={{ uri: post.user.imageUrl }}
             style={styles.avatar}
-          />
-        )}
+          />) : (
+            <Image
+              source={require('../assets/default-avatar.png')}
+              style={styles.avatar}
+            />
+          )}
+        </TouchableOpacity>
         <View>
-          <Text style={{fontSize: 18}}>{`${post.user.firstName} ${post.user.lastName}`}</Text>
+          <TouchableOpacity activeOpacity={1} onPress={() => navigation.navigate('Account', { id: post.user.id })}>
+            <Text style={{fontSize: 18}}>{`${post.user.firstName} ${post.user.lastName}`}</Text>
+          </TouchableOpacity>
           <View style={{flexDirection: 'row'}}>
             <Text>{formatDistance(post.post.distance)}</Text>
             <Text>{' | '}</Text>
@@ -90,6 +94,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     marginRight: 10,
+    borderRadius: 20
   },
   postImage: {
     width: '100%',

@@ -7,6 +7,8 @@ export const URLS = {
     CHANGE_PASSWORD: `${process.env.EXPO_PUBLIC_BASE_URL}/users/change-password`,
     CHANGE_RADIUS: `${process.env.EXPO_PUBLIC_BASE_URL}/users/posts-radius`,
     ACTIVATE: `${process.env.EXPO_PUBLIC_BASE_URL}/users/activate`,
+    PROFILE_PICTURE: `${process.env.EXPO_PUBLIC_BASE_URL}/users/profile-picture`,
+    USER_BY_ID: `${process.env.EXPO_PUBLIC_BASE_URL}/users/:id`
   },
   POSTS: {
     GET_ALL: `${process.env.EXPO_PUBLIC_BASE_URL}/posts`,

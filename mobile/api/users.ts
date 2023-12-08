@@ -128,3 +128,37 @@ export const changeRadius = async (radius: number): Promise<Response> => {
     }
   }
 }
+
+export const uploadAvatar = async (imageUri: string): Promise<string> => {
+  const formData = new FormData()
+  formData.append('profile-picture', {
+    uri: imageUri,
+    name: `avatar_${Date.now()}`,
+    type: 'image/jpeg',
+  } as any)
+
+  try {
+    const response = await axios.post(URLS.USERS.PROFILE_PICTURE, formData, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'multipart/form-data'
+      },
+    })
+
+    if (response.status === 200) {
+      return response.data.imageUrl
+    }
+    return ''
+  } catch (error) {
+    return ''
+  }
+}
+
+export const getUserById = async (id: number) => {
+  try {
+    const response = await axios.get(URLS.USERS.USER_BY_ID.replace(':id', id.toString()))
+    return response.data.user
+  } catch(error) {
+    return null
+  }
+}

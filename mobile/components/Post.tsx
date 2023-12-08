@@ -13,8 +13,6 @@ export const Post = ({ id, navigation, enableNavToDetailsScreen }: any) => {
   const decrementPostLikes = usePostsStore(store => store.decrementPostLikes)
   const post = usePostsStore(store => store.getPostById(id))
 
-  console.log(post.user)
-
   if (!post) {
     return null
   }

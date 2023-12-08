@@ -12,5 +12,8 @@ export const URLS = {
     GET_ALL: `${process.env.EXPO_PUBLIC_BASE_URL}/posts`,
     LIKES: `${process.env.EXPO_PUBLIC_BASE_URL}/posts/:id/likes`,
     COMMENTS: `${process.env.EXPO_PUBLIC_BASE_URL}/posts/:id/comments`
+  },
+  NOTIFICATIONS: {
+    HAS_UNSEEN: `${process.env.EXPO_PUBLIC_BASE_URL}/notifications/seen`
   }
 }

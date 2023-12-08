@@ -1,12 +1,15 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet } from 'react-native'
 import {
+  AccountScreen,
   ActivateScreen,
   ChangePasswordScreen,
-  ChangeRadius,
+  ChangeRadius as ChangeRadiusScreen,
+  CreatePostScreen,
   ForgottenPasswordScreen,
   HomeScreen,
   LocationPermissionDeniedScreen,
   LoginScreen,
+  NotificationsScreen,
   PostDetails as PostDetailsScreen,
   RegisterScreen,
   ResetPasswordScreen
@@ -42,6 +45,12 @@ const App = () => {
           <Stack.Navigator initialRouteName='Home' screenOptions={{ headerShown: false }}>
             <Stack.Screen name='Home' component={HomeScreen} />
             <Stack.Screen name="PostDetails" component={PostDetailsScreen} />
+            <Stack.Screen name="Activate" component={ActivateScreen} />
+            <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
+            <Stack.Screen name="ChangeRadius" component={ChangeRadiusScreen} />
+            <Stack.Screen name='Account' component={AccountScreen} />
+            <Stack.Screen name='Notifications' component={NotificationsScreen} />
+            <Stack.Screen name='CreatePost' component={CreatePostScreen} />
           </Stack.Navigator>
         ) : (
           <Stack.Navigator initialRouteName='Login' screenOptions={{ headerShown: false }}>

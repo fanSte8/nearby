@@ -5,53 +5,40 @@ import AntDesign from '@expo/vector-icons/AntDesign'
 import FontAwesome from '@expo/vector-icons/FontAwesome'
 import { PRIMARY_COLOR } from '../constants'
 import { likePost } from '../api/posts'
+import { usePostsStore } from '../storage/usePostsStorage'
 
-export const Post = ({ data, navigation, enableNavToDetailsScreen }: any) => {
-  const [liked, setLiked] = useState(false)
-  const [likes, setLikes] = useState(0)
+export const Post = ({ id, navigation, enableNavToDetailsScreen }: any) => {
+  const setLiked = usePostsStore(store => store.setLiked)
+  const incrementPostLikes = usePostsStore(store => store.incrementPostLikes)
+  const decrementPostLikes = usePostsStore(store => store.decrementPostLikes)
+  const post = usePostsStore(store => store.getPostById(id))
 
-  useEffect(() => {
-    setLiked(data.post.liked)
-    setLikes(data.post.likes)
-  }, [])
+  if (!post) {
+    return null
+  }
 
-  const {
-    user: {
-      firstName,
-      lastName,
-      imageUrl: avatarUrl
-    },
-    post: {
-      description,
-      imageUrl,
-      distance,
-      comments,
-      createdAt
-    }
-  } = data
+  const [updateFlag, setUpdateFlag] = useState(0)
 
   const handlePostLiked = async () => {
-    const success = likePost(data.post.id)
-    
-    if (!success) return
-
-    if (liked) {
-      setLikes(likes => likes - 1)
+    setLiked(id)
+    if (!post.post.liked) {
+      incrementPostLikes(id)
     } else {
-      setLikes(likes => likes + 1)
+      decrementPostLikes(id)
     }
-    setLiked(liked => !liked)
+
+    await likePost(id)
   }
 
   const goToPostDetails = () => {
-    if (enableNavToDetailsScreen) navigation.navigate('PostDetails', { data })
+    if (enableNavToDetailsScreen) navigation.navigate('PostDetails', { id })
   }
 
   return (
     <View style={styles.postContainer}>
       <View style={styles.userInfoContainer}>
-        {avatarUrl ?(<Image
-          source={{ uri: avatarUrl }}
+        {post.user.avatarUrl ?(<Image
+          source={{ uri: post.user.avatarUrl }}
           style={styles.avatar}
         />) : (
           <Image
@@ -60,25 +47,25 @@ export const Post = ({ data, navigation, enableNavToDetailsScreen }: any) => {
           />
         )}
         <View>
-          <Text style={{fontSize: 18}}>{`${firstName} ${lastName}`}</Text>
+          <Text style={{fontSize: 18}}>{`${post.user.firstName} ${post.user.lastName}`}</Text>
           <View style={{flexDirection: 'row'}}>
-            <Text>{formatDistance(distance)}</Text>
+            <Text>{formatDistance(post.post.distance)}</Text>
             <Text>{' | '}</Text>
-            <Text>{formatTime(createdAt)}</Text>
+            <Text>{formatTime(post.post.createdAt)}</Text>
           </View>
         </View>
       </View>
       <TouchableOpacity onPress={goToPostDetails} disabled={!enableNavToDetailsScreen} activeOpacity={1}>
-        <Text style={{ margin: 10 }}>{description}</Text>
-        <Image source={{ uri: imageUrl }} style={styles.postImage} />
+        <Text style={{ margin: 10 }}>{post.post.description}</Text>
+        <Image source={{ uri: post.post.imageUrl }} style={styles.postImage} />
       </TouchableOpacity>
       <View style={styles.actionButtonsContainer}>
        <TouchableOpacity style={styles.button} onPress={handlePostLiked}>
-          <Text style={liked ? styles.buttonTextWithPrimaryColor : styles.buttonText}>{likes}</Text>
-          <AntDesign name='like2' size={18} color={liked ? PRIMARY_COLOR : '#000'} />
+          <Text style={post.post.liked ? styles.buttonTextWithPrimaryColor : styles.buttonText}>{post.post.likes}</Text>
+          <AntDesign name='like2' size={18} color={post.post.liked ? PRIMARY_COLOR : '#000'} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={goToPostDetails} disabled={!enableNavToDetailsScreen} activeOpacity={1}>
-          <Text style={styles.buttonText}>{comments}</Text>
+          <Text style={styles.buttonText}>{post.post.comments}</Text>
           <FontAwesome name='comment-o' size={18} />
         </TouchableOpacity>
       </View>

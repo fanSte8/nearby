@@ -6,12 +6,14 @@ import { PRIMARY_COLOR } from "../constants"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { getComments, postComment } from "../api/posts"
 import { useUserStore } from "../storage/useUserStorage"
+import { usePostsStore } from "../storage/usePostsStorage"
 
 export const PostDetails = ({ navigation, route }: any) => {
   const pageSize = 10
-  const post = route.params.data
+  const post = route.params.id
 
   const user = useUserStore(store => store.user)
+  const incrementPostComments = usePostsStore(store => store.incrementPostComments)
 
   const [comments, setComments] = useState<any[]>([])
   const [newComment, setNewComment] = useState('')
@@ -19,13 +21,15 @@ export const PostDetails = ({ navigation, route }: any) => {
   const [hasMoreComments, setHasMoreComments] = useState(true)
 
   useEffect(() => {
-    handleLoadMoreComments()
+    (async () => {
+      await handleLoadMoreComments()
+    })()
   }, [])
 
   const handleLoadMoreComments = async () => {
     if (!hasMoreComments) return
+    const data = await getComments(post, page, pageSize)
 
-    const data = await getComments(post.post.id, page, pageSize)
 
     setPage(p => p + 1)
     if (!data.comments || data.comments.length < pageSize) {
@@ -36,11 +40,12 @@ export const PostDetails = ({ navigation, route }: any) => {
   }
 
   const handleAddComment = async () => {
-    const res = await postComment(post.post.id, newComment)
+    const res = await postComment(post, newComment)
     
     if (res) {
       setNewComment('')
-      setComments([{ user, comment: res }, ...comments ])
+      incrementPostComments(post)
+      setComments([{ user, comment: res.comment }, ...comments ])
     }
   }
 
@@ -50,7 +55,7 @@ export const PostDetails = ({ navigation, route }: any) => {
         <Ionicons name="chevron-back" color={"black"} size={32}/>
       </TouchableOpacity>
       <View style={{width: '100%'}}>
-        <Post data={post} navigation={navigation} enableNavToDetailsScreen={false} />
+        <Post id={post} navigation={navigation} enableNavToDetailsScreen={false} />
       </View>
       {user?.activated && (
         <View style={styles.addCommentContainer}>

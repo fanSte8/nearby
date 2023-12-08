@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"nearby/common/commoncontext"
 	"nearby/common/jsonutils"
 	"nearby/common/validator"
@@ -132,10 +131,6 @@ func (app *application) handleGetPosts(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		app.httpErrors.ServerErrorResponse(w, r, err)
 		return
-	}
-
-	for _, post := range posts {
-		fmt.Println(post)
 	}
 
 	postsWithUsers := app.combinePostsWithUserData(posts)

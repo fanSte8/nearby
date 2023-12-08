@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { View, Text, FlatList, TouchableOpacity, Image } from 'react-native'
 import { getNotifications } from '../api/notifications'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { Ionicons } from '@expo/vector-icons'
 import { BasicLayout } from '../layouts'
 
 export const NotificationsScreen = ({ navigation }: any) => {
@@ -23,9 +21,21 @@ export const NotificationsScreen = ({ navigation }: any) => {
 
   const renderNotificationItem = ({ item }: any) => {
     const { user, notifications } = item
-    const notificationText = `${user.firstName} ${user.lastName} and ${
-      notifications.count - 1 > 0 ? notifications.count - 1 + ' other users' : ''
-    } ${notifications.type.toLowerCase()}d on your post.`
+    
+    let text = `${user.firstName} ${user.lastName} `
+
+    switch (notifications.count) {
+      case 1:
+          text += 'has '
+          break
+      case 2:
+        text += 'and 1 other user have '
+        break
+      default:
+        text += `and ${notifications.count} other users have `
+    }
+
+    text += `${notifications.type === 'Like' ? 'liked' : 'commented on'} your post`
 
     return (
       <TouchableOpacity
@@ -35,7 +45,7 @@ export const NotificationsScreen = ({ navigation }: any) => {
           <Image source={{ uri: user.imageUrl }} style={{ width: 50, height: 50, borderRadius: 25 }} />
           <View style={{ flex: 1, marginLeft: 10 }}>
             <Text>
-              <Text style={[{fontSize: 18}, notifications.seen ? {} : { fontWeight: 'bold' }]}>{notificationText}</Text>
+              <Text style={[{fontSize: 18}, notifications.seen ? {} : { fontWeight: 'bold' }]}>{text}</Text>
             </Text>
           </View>
         </View>

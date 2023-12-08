@@ -7,6 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { getComments, postComment } from "../api/posts"
 import { useUserStore } from "../storage/useUserStorage"
 import { usePostsStore } from "../storage/usePostsStorage"
+import { BasicLayout } from "../layouts"
 
 export const PostDetails = ({ navigation, route }: any) => {
   const pageSize = 10
@@ -50,10 +51,7 @@ export const PostDetails = ({ navigation, route }: any) => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <TouchableOpacity onPress={navigation.goBack} style={{ alignSelf: 'flex-start' }}>
-        <Ionicons name="chevron-back" color={"black"} size={32}/>
-      </TouchableOpacity>
+    <BasicLayout navigation={navigation} title="Post Details">
       <View style={{width: '100%'}}>
         <Post id={post} navigation={navigation} enableNavToDetailsScreen={false} />
       </View>
@@ -77,7 +75,7 @@ export const PostDetails = ({ navigation, route }: any) => {
           showsVerticalScrollIndicator={false}
         />
       </View>
-    </SafeAreaView>
+    </BasicLayout>
   )
 }
 

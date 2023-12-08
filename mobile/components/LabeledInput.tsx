@@ -8,9 +8,11 @@ interface PropsType {
   placeholder: string,
   secureText?: boolean,
   keyboardType?: KeyboardTypeOptions
+  multiline?: boolean
+  style?: any
 }
 
-export const LabeledInput = ({ label, value, onChangeText, placeholder, secureText, keyboardType }: PropsType) => {
+export const LabeledInput = ({ label, value, onChangeText, placeholder, secureText, keyboardType, multiline, style }: PropsType) => {
   return <View style={{ padding: 10 }}>
     <Text style={{ paddingLeft: 5 }}>{label}</Text>
     <Input 
@@ -19,6 +21,8 @@ export const LabeledInput = ({ label, value, onChangeText, placeholder, secureTe
       placeholder={placeholder}
       secureText={secureText || false}
       keyboardType={keyboardType || undefined}
+      multiline={multiline}
+      style={style}
     />
   </View>
 }

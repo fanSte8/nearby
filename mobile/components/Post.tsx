@@ -13,6 +13,9 @@ export const Post = ({ id, navigation, enableNavToDetailsScreen }: any) => {
   const decrementPostLikes = usePostsStore(store => store.decrementPostLikes)
   const post = usePostsStore(store => store.getPostById(id))
 
+  const [imgWidth, setImgWidth] = useState(1)
+  const [imgHeight, setImgHeight] = useState(1)
+
   if (!post) {
     return null
   }
@@ -30,6 +33,19 @@ export const Post = ({ id, navigation, enableNavToDetailsScreen }: any) => {
 
   const goToPostDetails = () => {
     if (enableNavToDetailsScreen) navigation.navigate('PostDetails', { id })
+  }
+
+  const getImageDimensions = (imageUrl: string) => {
+    Image.getSize(
+      imageUrl,
+      (width, height) => {
+        setImgHeight(height)
+        setImgWidth(width)
+      },
+      (error) => {
+        console.error('Error getting image dimensions:', error)
+      }
+    )
   }
 
   return (
@@ -59,7 +75,15 @@ export const Post = ({ id, navigation, enableNavToDetailsScreen }: any) => {
       </View>
       <TouchableOpacity onPress={goToPostDetails} disabled={!enableNavToDetailsScreen} activeOpacity={1}>
         <Text style={{ margin: 10 }}>{post.post.description}</Text>
-        <Image source={{ uri: post.post.imageUrl }} style={styles.postImage} />
+        <Image
+          source={{ uri: post.post.imageUrl }}
+          onLoad={() => getImageDimensions(post.post.imageUrl)}
+          style={{
+            width: '100%',
+            height: 'auto',
+            aspectRatio: imgWidth / imgHeight,
+            resizeMode: 'contain',
+          }}/>
       </TouchableOpacity>
       <View style={styles.actionButtonsContainer}>
        <TouchableOpacity style={styles.button} onPress={handlePostLiked}>
@@ -93,10 +117,6 @@ const styles = StyleSheet.create({
     height: 40,
     marginRight: 10,
     borderRadius: 20
-  },
-  postImage: {
-    width: '100%',
-    height: 200,
   },
   actionButtonsContainer: {
     flexDirection: 'row',

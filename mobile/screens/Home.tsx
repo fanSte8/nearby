@@ -10,6 +10,7 @@ import * as Location from 'expo-location'
 import { usePostsStore } from "../storage/usePostsStorage"
 import { hasSeenNotifications as hasUnseenNotifications } from "../api/notifications"
 import { useUserStore } from "../storage/useUserStorage"
+import { useLocation } from "../hooks/useLocation"
 
 export const HomeScreen = ({ navigation, route }: any) => {
   const posts = usePostsStore(store => store.posts)
@@ -45,16 +46,7 @@ export const HomeScreen = ({ navigation, route }: any) => {
     })()
   }, [sortBy])
 
-  const [latitude, setLatitude] = useState(0)
-  const [longitude, setLongitude] = useState(0)
-
-  useEffect(() => {
-    (async () => {
-      const location = await Location.getCurrentPositionAsync({})
-      setLatitude(location.coords.latitude)
-      setLongitude(location.coords.longitude)
-    })()
-  }, [])
+  const { latitude, longitude } = useLocation()
 
   useEffect(() => {
     (async () => {

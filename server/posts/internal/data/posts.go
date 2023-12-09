@@ -153,7 +153,7 @@ func (m PostModel) GetPosts(sort string, userId int64, userLatitude, userLongitu
 		LEFT JOIN comments ON comments.post_id = posts.id
 		LEFT JOIN likes ON likes.post_id = posts.id
 		GROUP BY posts.id
-	) 
+	) AS q
 	WHERE distance < $4 
 	ORDER BY distance ASC
 	LIMIT $5 OFFSET $6`
@@ -175,7 +175,7 @@ func (m PostModel) GetPosts(sort string, userId int64, userLatitude, userLongitu
 		LEFT JOIN comments ON comments.post_id = posts.id
 		LEFT JOIN likes ON likes.post_id = posts.id
 		GROUP BY posts.id
-	) 
+	) AS q
 	WHERE distance < $4 
 	ORDER BY created_at DESC
 	LIMIT $5 OFFSET $6`
@@ -198,7 +198,7 @@ func (m PostModel) GetPosts(sort string, userId int64, userLatitude, userLongitu
 		LEFT JOIN comments ON comments.post_id = posts.id
 		LEFT JOIN likes ON likes.post_id = posts.id
 		GROUP BY posts.id
-	) 
+	) AS q 
 	WHERE distance < $4 
 	ORDER BY score DESC
 	LIMIT $5 OFFSET $6`

@@ -137,6 +137,7 @@ export const HomeScreen = ({ navigation, route }: any) => {
         renderItem={({ item }) =><Post id={item.post.id} navigation={navigation} enableNavToDetailsScreen={true} fetchFromAPI={false} />}
         onEndReached={() => fetchPosts(page)}
         onEndReachedThreshold={0.5}
+        showsVerticalScrollIndicator={false}
       />
       {isLoadingPosts && <Loading />}
       {user?.activated && (

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { FlatList, TextInput, TouchableOpacity, View, Text, StyleSheet } from "react-native"
+import { FlatList, TextInput, TouchableOpacity, View, Text, StyleSheet, ScrollView } from "react-native"
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { Post, Comment, Button, Input } from "../components"
 import { PRIMARY_COLOR } from "../constants"
@@ -52,29 +52,31 @@ export const PostDetails = ({ navigation, route }: any) => {
 
   return (
     <BasicLayout navigation={navigation} title="Post Details">
-      <View style={{width: '100%'}}>
-        <Post id={post} navigation={navigation} enableNavToDetailsScreen={false} />
-      </View>
-      {user?.activated && (
-        <View style={styles.addCommentContainer}>
-          <Input
-            placeholder="Add a comment..."
-            value={newComment}
-            onChangeText={(text) => setNewComment(text)}
-          />
-          <Button text="Post" onPress={handleAddComment} />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={{width: '100%'}}>
+          <Post id={post} navigation={navigation} enableNavToDetailsScreen={false} />
         </View>
-      )}
-      <View style={styles.commentsList}>
-        <FlatList
-          data={comments}
-          keyExtractor={(item) => item.comment.id}
-          renderItem={({ item }) => <Comment comment={item} />}
-          onEndReached={handleLoadMoreComments}
-          onEndReachedThreshold={0.1}
-          showsVerticalScrollIndicator={false}
-        />
-      </View>
+        {user?.activated && (
+          <View style={styles.addCommentContainer}>
+            <Input
+              placeholder="Add a comment..."
+              value={newComment}
+              onChangeText={(text) => setNewComment(text)}
+            />
+            <Button text="Post" onPress={handleAddComment} />
+          </View>
+        )}
+        <View style={styles.commentsList}>
+          <FlatList
+            data={comments}
+            keyExtractor={(item) => item.comment.id}
+            renderItem={({ item }) => <Comment comment={item} />}
+            onEndReached={handleLoadMoreComments}
+            onEndReachedThreshold={0.1}
+            showsVerticalScrollIndicator={false}
+          />
+        </View>
+      </ScrollView>
     </BasicLayout>
   )
 }
@@ -89,8 +91,9 @@ const styles = StyleSheet.create({
   addCommentContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    width: '75%',
+    justifyContent: 'flex-start',
+    marginLeft: 5,
+    width: '75%'
   },
   commentInput: {
     flex: 1,
@@ -111,6 +114,7 @@ const styles = StyleSheet.create({
   commentsList: {
     borderTopWidth: 1,
     borderColor: '#ccc',
-    width: '100%'
+    width: '100%',
+    height: 500
   }
 })

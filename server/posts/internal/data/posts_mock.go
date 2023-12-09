@@ -87,6 +87,10 @@ func (m MockPostModel) GetPost(postId, userId int64, userLatitude, userLongitude
 	return nil, ErrRecordNotFound
 }
 
+func (m MockPostModel) GetUserPost(currentUserId, targetUserId int64, userLatitude, userLongitude string, pagination Pagination) ([]*PostResponse, error) {
+	return GetMockPostResponses(), nil
+}
+
 func (m MockPostModel) Delete(id int64) error {
 	return nil
 }

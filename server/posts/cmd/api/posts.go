@@ -142,6 +142,44 @@ func (app *application) handleGetPosts(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (app *application) handleGetUserPosts(w http.ResponseWriter, r *http.Request) {
+	userId := commoncontext.ContextGetUserID(r)
+
+	queryValues := r.URL.Query()
+	pagination := app.getPaginationFromQuery(queryValues)
+
+	params := mux.Vars(r)
+	targetUserId, err := strconv.ParseInt(params["id"], 10, 64)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	v := validator.New()
+
+	latitude := r.URL.Query().Get("latitude")
+	longitude := r.URL.Query().Get("longitude")
+	data.ValidateCoordinates(v, latitude, longitude)
+	if !v.Valid() {
+		app.httpErrors.FailedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	posts, err := app.models.Posts.GetUserPost(userId, targetUserId, longitude, latitude, pagination)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+
+	postsWithUsers := app.combinePostsWithUserData(posts)
+
+	err = jsonutils.WriteJSON(w, http.StatusCreated, envelope{"posts": postsWithUsers}, nil)
+	if err != nil {
+		app.httpErrors.ServerErrorResponse(w, r, err)
+		return
+	}
+}
+
 func (app *application) handleDeletePost(w http.ResponseWriter, r *http.Request) {
 	userId := commoncontext.ContextGetUserID(r)
 

@@ -15,6 +15,7 @@ func (app *application) routes() http.Handler {
 	r.Methods(http.MethodDelete).Path("/v1/posts/{id}").HandlerFunc(app.authorize(app.handleDeletePost))
 	r.Methods(http.MethodGet).Path("/v1/posts").HandlerFunc(app.authorize(app.handleGetPosts))
 	r.Methods(http.MethodGet).Path("/v1/posts/{id}").HandlerFunc(app.authorize(app.handleGetPost))
+	r.Methods(http.MethodGet).Path("/v1/posts/users/{id}").HandlerFunc(app.authorize(app.handleGetUserPosts))
 
 	r.Methods(http.MethodPost).Path("/v1/posts/{postId}/likes").HandlerFunc(app.authorize(app.handlePostLike))
 

@@ -78,9 +78,9 @@ export const Post = ({ id, navigation, enableNavToDetailsScreen, fetchFromAPI = 
   return (
     <View style={styles.postContainer}>
       <View style={styles.userInfoContainer}>
-        <TouchableOpacity activeOpacity={1} onPress={() => navigation.navigate('Account', { id: post.user.id })}>
-          {post.user.imageUrl ?(<Image
-            source={{ uri: post.user.imageUrl }}
+        <TouchableOpacity activeOpacity={1} onPress={() => navigation.navigate('Account', { id: post?.user?.id })}>
+          {post?.user?.imageUrl ?(<Image
+            source={{ uri: post?.user?.imageUrl }}
             style={styles.avatar}
           />) : (
             <Image
@@ -90,8 +90,8 @@ export const Post = ({ id, navigation, enableNavToDetailsScreen, fetchFromAPI = 
           )}
         </TouchableOpacity>
         <View>
-          <TouchableOpacity activeOpacity={1} onPress={() => navigation.navigate('Account', { id: post.user.id })}>
-            <Text style={{fontSize: 18}}>{`${post.user.firstName} ${post.user.lastName}`}</Text>
+          <TouchableOpacity activeOpacity={1} onPress={() => navigation.navigate('Account', { id: post?.user?.id })}>
+            <Text style={{fontSize: 18}}>{`${post?.user?.firstName} ${post?.user?.lastName}`}</Text>
           </TouchableOpacity>
           <View style={{flexDirection: 'row'}}>
             <Text>{formatDistance(post.post.distance)}</Text>

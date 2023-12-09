@@ -10,11 +10,19 @@ export const getPosts = async (sort: string, longitude: number, latitude: number
   }
 }
 
+export const getUserPosts = async (userId: number, longitude: number, latitude: number, page: number, pageSize = 10) => {
+  try {
+    const response = await axios.get(URLS.POSTS.POSTS.replace(':id', String(userId)), { params: { longitude, latitude, page, pageSize } })
+    return response.data
+  } catch(error) {
+    return formatError(error)
+  }
+}
+
 export const likePost = async (id: number): Promise<boolean> => {
   try {
     const res = await axios.post(URLS.POSTS.LIKES.replace(':id', String(id)))
     return res.data.like
-    return true
   } catch(error) {
     return false
   }

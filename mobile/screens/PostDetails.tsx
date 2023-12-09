@@ -10,7 +10,7 @@ import { usePostsStore } from "../storage/usePostsStorage"
 import { BasicLayout } from "../layouts"
 
 export const PostDetails = ({ navigation, route }: any) => {
-  const pageSize = 10
+  const pageSize = 20
   const post = route.params.id
 
   const user = useUserStore(store => store.user)
@@ -53,28 +53,33 @@ export const PostDetails = ({ navigation, route }: any) => {
   return (
     <BasicLayout navigation={navigation} title="Post Details">
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={{width: '100%'}}>
-          <Post id={post} navigation={navigation} enableNavToDetailsScreen={false} />
-        </View>
-        {user?.activated && (
-          <View style={styles.addCommentContainer}>
-            <Input
-              placeholder="Add a comment..."
-              value={newComment}
-              onChangeText={(text) => setNewComment(text)}
-            />
-            <Button text="Post" onPress={handleAddComment} />
+        <View style={styles.container}>
+          <View style={{ width: '100%' }}>
+            <Post id={post} navigation={navigation} enableNavToDetailsScreen={false} />
           </View>
-        )}
-        <View style={styles.commentsList}>
-          <FlatList
-            data={comments}
-            keyExtractor={(item) => item.comment.id}
-            renderItem={({ item }) => <Comment comment={item} />}
-            onEndReached={handleLoadMoreComments}
-            onEndReachedThreshold={0.1}
-            showsVerticalScrollIndicator={false}
-          />
+          {user?.activated && (
+            <View style={styles.addCommentContainer}>
+              <Input
+                placeholder="Add a comment..."
+                value={newComment}
+                onChangeText={(text) => setNewComment(text)}
+              />
+              <Button text="Post" onPress={handleAddComment} />
+            </View>
+          )}
+          <View style={styles.commentsList}>
+            <FlatList
+              data={comments}
+              keyExtractor={(item) => item.comment.id}
+              renderItem={({ item }) => <Comment comment={item} />}
+              onEndReached={() => {
+                console.log('end reached')
+                handleLoadMoreComments()
+              }}
+              onEndReachedThreshold={0.5}
+              showsVerticalScrollIndicator={false}
+            />
+          </View>
         </View>
       </ScrollView>
     </BasicLayout>
@@ -91,7 +96,7 @@ const styles = StyleSheet.create({
   addCommentContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     marginLeft: 5,
     width: '75%'
   },
@@ -114,7 +119,6 @@ const styles = StyleSheet.create({
   commentsList: {
     borderTopWidth: 1,
     borderColor: '#ccc',
-    width: '100%',
-    height: 500
+    width: '100%'
   }
 })

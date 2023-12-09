@@ -15,6 +15,7 @@ export const URLS = {
     POSTS: `${process.env.EXPO_PUBLIC_BASE_URL}/posts`,
     LIKES: `${process.env.EXPO_PUBLIC_BASE_URL}/posts/:id/likes`,
     COMMENTS: `${process.env.EXPO_PUBLIC_BASE_URL}/posts/:id/comments`,
+    USER_POSTS: `${process.env.EXPO_PUBLIC_BASE_URL}/posts/users/:id`
   },
   NOTIFICATIONS: {
     NOTIFICATIONS: `${process.env.EXPO_PUBLIC_BASE_URL}/notifications`,

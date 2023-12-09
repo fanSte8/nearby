@@ -42,7 +42,7 @@ export const NotificationsScreen = ({ navigation }: any) => {
         onPress={() => navigation.navigate('PostDetails', { id: notifications.postId })}
       >
         <View style={{ flexDirection: 'row', padding: 10, borderBottomWidth: 1, borderBottomColor: '#ccc' }}>
-          <Image source={{ uri: user.imageUrl }} style={{ width: 50, height: 50, borderRadius: 25 }} />
+          <Image source={user.imageUrl ? { uri: user.imageUrl } : require('../assets/default-avatar.png')} style={{ width: 50, height: 50, borderRadius: 25 }} />
           <View style={{ flex: 1, marginLeft: 10 }}>
             <Text>
               <Text style={[{fontSize: 18}, notifications.seen ? {} : { fontWeight: 'bold' }]}>{text}</Text>

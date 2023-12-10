@@ -1,6 +1,6 @@
 import { getPosts } from "../api/posts"
 import { Loading, Post, SidePanel } from "../components"
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, Modal } from 'react-native'
 import { Entypo, Ionicons } from '@expo/vector-icons' 
 import { SafeAreaView } from "react-native-safe-area-context"
@@ -10,7 +10,7 @@ import * as Location from 'expo-location'
 import { usePostsStore } from "../storage/usePostsStorage"
 import { hasSeenNotifications as hasUnseenNotifications } from "../api/notifications"
 import { useUserStore } from "../storage/useUserStorage"
-import { useLocation } from "../hooks/useLocation"
+import { useFocusEffect } from "@react-navigation/native"
 
 export const HomeScreen = ({ navigation, route }: any) => {
   const posts = usePostsStore(store => store.posts)
@@ -34,7 +34,7 @@ export const HomeScreen = ({ navigation, route }: any) => {
 
   const flatListRef = useRef<any>(null)
 
-  useEffect(() => {
+  const resetScreen = useCallback(() => {
     (async () => {
       setPage(1)
       setHasMorePosts(true)
@@ -43,20 +43,20 @@ export const HomeScreen = ({ navigation, route }: any) => {
         flatListRef.current.scrollToOffset({ offset: 0, animated: true })
       }
       await fetchPosts(1)
-    })()
-  }, [sortBy])
-
-  useEffect(() => {
-    (async () => {
-      const res = await hasUnseenNotifications()
-      setHasNewNotifications(res)
+      
+      const hasNotifications = await hasUnseenNotifications()
+      setHasNewNotifications(hasNotifications)
     })()
   }, [])
 
-  const [showSidePanel, setShowSidePanel] = useState(false)
-  const toggleSidePanel = () => {
-    setShowSidePanel(!showSidePanel)
-  }
+  useFocusEffect(resetScreen)
+
+  useEffect(() => {
+    (async () => { 
+      await resetScreen()
+    })()
+  }, [sortBy])
+
 
   const fetchPosts = async (nextPage = page) => {
     if (!hasMorePosts || isLoadingPosts) {
@@ -78,10 +78,10 @@ export const HomeScreen = ({ navigation, route }: any) => {
     setIsLoadingPosts(false)
   }
 
-  useEffect(() => {
-    setPage(1)
-    reset()
-  }, [])
+  const [showSidePanel, setShowSidePanel] = useState(false)
+  const toggleSidePanel = () => {
+    setShowSidePanel(!showSidePanel)
+  }
 
   return (
     <SafeAreaView style={styles.container}>

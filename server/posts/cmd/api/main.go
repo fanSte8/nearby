@@ -44,12 +44,6 @@ func main() {
 
 	defer db.Close()
 
-	err = migrateDB(db)
-	if err != nil {
-		log.Error("Error running database migrations", "error", err)
-		return
-	}
-
 	httpErrors := httperrors.NewHttpErrors(log)
 	commonMiddleware := middleware.NewCommonMiddleware(httpErrors)
 

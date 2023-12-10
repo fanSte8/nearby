@@ -1,4 +1,4 @@
-apiVersion: mailer/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mailer-deployment
@@ -17,6 +17,32 @@ spec:
         image: 721145219880.dkr.ecr.eu-central-1.amazonaws.com/nearby-mailer:latest
         ports:
         - containerPort: 3003
+        env:
+          - name: SMTP_HOST
+            valueFrom:
+              secretKeyRef:
+                name: secrets
+                key: nearby-smtp-host
+          - name: SMTP_PORT
+            valueFrom:
+              secretKeyRef:
+                name: secrets
+                key: nearby-smtp-port
+          - name: SMTP_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: secrets
+                key: nearby-smtp-username
+          - name: SMTP_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: secrets
+                key: nearby-smtp-password
+          - name: SMTP_SENDER
+            valueFrom:
+              secretKeyRef:
+                name: secrets
+                key: nearby-smtp-sender
 ---
 apiVersion: v1
 kind: Service
@@ -28,5 +54,5 @@ spec:
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 3000
+      targetPort: 3003
   type: ClusterIP

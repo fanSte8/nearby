@@ -21,3 +21,5 @@
 go.work
 
 .env
+
+k8s/secrets.yaml

@@ -1,4 +1,4 @@
-apiVersion: users/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: users-deployment
@@ -17,6 +17,39 @@ spec:
         image: 721145219880.dkr.ecr.eu-central-1.amazonaws.com/nearby-users:latest
         ports:
         - containerPort: 3000
+        env:
+            - name: DSN
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: nearby-users-dsn
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: nearby-jwt-secret
+            - name: S3_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: nearby-s3-bucket-name
+            - name: AWS_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: nearby-s3-region
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: nearby-s3-access-key-id
+            - name: AWS_ACCESS_KEY_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: nearby-s3-access-key-secret
+            - name: MAILER_SERVICE
+              value: http://mailer-service
 ---
 apiVersion: v1
 kind: Service

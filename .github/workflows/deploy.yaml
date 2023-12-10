@@ -9,7 +9,6 @@ env:
   AWS_REGION: eu-central-1
   ECR_REPOSITORY: nearby
   EKS_CLUSTER_NAME: nearby
-  SERVICES: "users,posts,notifications,mailer,gateway"
 
 jobs:
   deploy-service:
@@ -17,7 +16,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: ${{ split(env.SERVICES, ',') }}
+        service:
+          - users
+          - posts
+          - notifications
+          - mailer
+          - gateway
 
     steps:
       - name: Checkout code

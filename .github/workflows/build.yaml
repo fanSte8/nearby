@@ -43,14 +43,18 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ steps.commit.outputs.short }}
         run: |
-          docker build ./server/ -t ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}-${{ matrix.service }}:latest -f ./server/${{ matrix.service }}/Dockerfile
-          docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}-${{ matrix.service }}:latest
-
-      - name: Authenticate kubectl
+          docker build ./server/ -t ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}-${{ matrix.service }}:$CI_COMMIT_SHORT_SHA -f ./server/${{ matrix.service }}/Dockerfile
+          docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}-${{ matrix.service }}:$CI_COMMIT_SHORT_SHA
+      
+      - name: Update Kubernetes deployment
         run: |
-          mkdir -p $HOME/.kube
-          aws eks --region ${{ env.AWS_REGION }} update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --kubeconfig $HOME/.kube/config
-
-      - name: Deploy to EKS
+          IMAGE_NAME=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}-${{ matrix.service }}:$CI_COMMIT_SHORT_SHA
+          sed -i "s|image:.*|image: $IMAGE_NAME|" ${{ matrix.service }}.yaml
+      
+      - name: Commit deployment changes
         run: |
-          kubectl apply -f ./server/k8s/${{ matrix.service }}.yaml --kubeconfig $HOME/.kube/config
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add ${{ matrix.service }}.yaml
+          git commit -m "ci: update image in ${{ matrix.service }}.yaml"
+          git push

@@ -1,4 +1,4 @@
-name: Deploy Services to ECR and EKS
+name: Build image and push to ECR
 
 on:
   workflow_dispatch:

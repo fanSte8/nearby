@@ -9,6 +9,7 @@ func (app *application) authorize(handler http.HandlerFunc) http.HandlerFunc {
 	if app.config.testing {
 		return func(w http.ResponseWriter, r *http.Request) {
 			r = commoncontext.ContextSetUserID(r, 1)
+			r = commoncontext.ContextSetUserActivated(r, true)
 			handler.ServeHTTP(w, r)
 		}
 	}

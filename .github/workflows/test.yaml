@@ -15,6 +15,14 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        service:
+          - users
+          - posts
+          - notifications
+          - mailer
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -24,22 +32,7 @@ jobs:
       with:
         go-version: 1.21
 
-    - name: Test users service
+    - name: Test ${{ matrix.service }} service
       run: |
-        cd server/users
-        go test -v ./...
-
-    - name: Test posts service
-      run: |
-        cd server/posts
-        go test -v ./...
-
-    - name: Test notifications service
-      run: |
-        cd server/notifications
-        go test -v ./...
-
-    - name: Test mailer service
-      run: |
-        cd server/mailer
+        cd server/${{ matrix.service }}
         go test -v ./...

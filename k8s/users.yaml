@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: users-container
-        image: 721145219880.dkr.ecr.eu-central-1.amazonaws.com/nearby-users:8fa4eb8743c1eb3cc3510eaa9ee6fa98e1946488
+        image: 721145219880.dkr.ecr.eu-central-1.amazonaws.com/nearby-users:974239cffa41ab758380f8a708de26cabbf13c32
         ports:
         - containerPort: 3000
         env:

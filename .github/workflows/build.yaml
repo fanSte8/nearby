@@ -1,4 +1,4 @@
-name: Deploy Services to ECR and EKS
+name: Build image and push to ECR
 
 on:
   workflow_dispatch:
@@ -43,17 +43,18 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ steps.commit.outputs.short }}
         run: |
-          docker build ./server/ -t $ECR_REGISTRY/$ECR_REPOSITORY-${{ matrix.service }}:latest -f ./server/${{ matrix.service }}/Dockerfile .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY-${{ matrix.service }}:latest
-
-      - name: Update kube config
-        run: aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region $AWS_REGION
-
-      - name: Deploy to EKS
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ steps.commit.outputs.short }}
+          docker build ./server/ -t ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}-${{ matrix.service }}:$CI_COMMIT_SHORT_SHA -f ./server/${{ matrix.service }}/Dockerfile
+          docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}-${{ matrix.service }}:$CI_COMMIT_SHORT_SHA
+      
+      - name: Update Kubernetes deployment
         run: |
-          sed -i.bak "s|DOCKER_IMAGE|$ECR_REGISTRY/$ECR_REPOSITORY:${{ matrix.service }}-$IMAGE_TAG|g" manifests/${{ matrix.service }}-app-deployment.yaml && \
-          kubectl apply -f manifests/${{ matrix.service }}-app-deployment.yaml
-          kubectl apply -f manifests/${{ matrix.service }}-app-service.yaml
+          IMAGE_NAME=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}-${{ matrix.service }}:$CI_COMMIT_SHORT_SHA
+          sed -i "s|image:.*|image: $IMAGE_NAME|" ${{ matrix.service }}.yaml
+      
+      - name: Commit deployment changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add ${{ matrix.service }}.yaml
+          git commit -m "ci: update image in ${{ matrix.service }}.yaml"
+          git push

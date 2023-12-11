@@ -46,12 +46,8 @@ jobs:
           docker build ./server/ -t ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}-${{ matrix.service }}:latest -f ./server/${{ matrix.service }}/Dockerfile
           docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}-${{ matrix.service }}:latest
 
-      - name: Update kube config
-        run: |
-          aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }} --kubeconfig ./kube/config
-          cat ./kube/config
-
       - name: Deploy to EKS
         run: |
+          aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }} --kubeconfig ./kube/config
           kubectl apply -f ./server/k8s/${{ matrix.service }}.yaml --kubeconfig ./kube/config
           kubectl apply -f ./server/k8s/${{ matrix.service }}.yaml --kubeconfig ./kube/config

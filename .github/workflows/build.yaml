@@ -63,7 +63,6 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git pull --rebase
           git add ./k8s/
           git commit -m "ci: update images in Kubernetes files"
           git push

@@ -11,8 +11,8 @@ env:
   EKS_CLUSTER_NAME: nearby
 
 jobs:
-  deploy-service:
-    name: Deploy Services
+  build-and-push:
+    name: Build and Push Docker Images
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -22,8 +22,6 @@ jobs:
           - notifications
           - mailer
           - gateway
-      max-parallel: 1
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -45,19 +43,27 @@ jobs:
         run: |
           docker build ./server/ -t ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}-${{ matrix.service }}:${{ github.sha }} -f ./server/${{ matrix.service }}/Dockerfile
           docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}-${{ matrix.service }}:${{ github.sha }}
-      
+
+  update-and-commit:
+    name: Update Kubernetes Files and Commit
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Update Kubernetes deployment
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          IMAGE_NAME=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}-${{ matrix.service }}:${{ github.sha }}
-          sed -i "s|image:.*|image: $IMAGE_NAME|" ./k8s/${{ matrix.service }}.yaml
-      
-      - name: Commit deployment changes
+          for service in users posts notifications mailer gateway; do
+            IMAGE_NAME=${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}-$service:${{ github.sha }}
+            sed -i "s|image:.*|image: $IMAGE_NAME|" ./k8s/$service.yaml
+          done
+
+      - name: Commit and Push deployment changes
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git pull
-          git add ./k8s/${{ matrix.service }}.yaml
-          git commit -m "ci: update image in ./k8s/${{ matrix.service }}.yaml"
+          git pull --rebase
+          git add ./k8s/
+          git commit -m "ci: update images in Kubernetes files"
           git push

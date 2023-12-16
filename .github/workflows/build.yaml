@@ -3,7 +3,7 @@ name: Build image and push to ECR
 on:
   workflow_dispatch:
   push:
-    branches: [master]
+    branches: [main]
 
 env:
   AWS_REGION: eu-central-1

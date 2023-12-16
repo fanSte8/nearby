@@ -7,9 +7,7 @@ interface Response {
 }
 
 export const login = async (email: string, password: string): Promise<Response> => {
-  console.log('logging in')
   try {
-    console.log(URLS)
     const response = await axios.post(URLS.USERS.LOGIN, { email, password })
 
     return {

@@ -73,7 +73,6 @@ export const PostDetails = ({ navigation, route }: any) => {
               keyExtractor={(item) => item.comment.id}
               renderItem={({ item }) => <Comment comment={item} />}
               onEndReached={() => {
-                console.log('end reached')
                 handleLoadMoreComments()
               }}
               onEndReachedThreshold={0.5}

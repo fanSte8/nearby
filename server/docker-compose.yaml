@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  mailer:
+    build:
+      context: .
+      dockerfile: ./mailer/Dockerfile
+    container_name: mailer
+    networks:
+      - nearby-network
+    env_file:
+      - ./mailer/.env
+
+  users:
+    build:
+      context: .
+      dockerfile: ./users/Dockerfile
+    container_name: users
+    networks:
+      - nearby-network
+    env_file:
+      - ./users/.env
+    environment:
+      - MAILER_SERVICE=http://mailer:3003
+
+  posts:
+    build:
+      context: .
+      dockerfile: ./posts/Dockerfile
+    container_name: posts
+    networks:
+      - nearby-network
+    env_file:
+      - ./posts/.env
+    environment:
+      - USERS_SERVICE=http://users:3000
+
+  notifications:
+    build:
+      context: .
+      dockerfile: ./notifications/Dockerfile
+    container_name: notifications
+    networks:
+      - nearby-network
+    env_file:
+      - ./notifications/.env
+    environment:
+      - USERS_SERVICE=http://users:3000
+
+  gateway:
+    build:
+      context: .
+      dockerfile: ./gateway/Dockerfile
+    container_name: gateway
+    networks:
+      - nearby-network
+    ports:
+      - "3004:3004"
+    environment:
+      - USERS_SERVICE=http://users:3000
+      - POSTS_SERVICE=http://posts:3001
+      - NOTIFICATIONS_SERVICE=http://notifications:3002
+
+networks:
+  nearby-network:
+    driver: bridge

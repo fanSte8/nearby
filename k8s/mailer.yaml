@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: mailer-container
-        image: eu-central-1.amazonaws.com/nearby-mailer:be12e8d30cb5059077051453f7a6a243cd9747a6
+        image: eu-central-1.amazonaws.com/nearby-mailer:5ab3cdcd6f4751466b0ef9fbb9fdb3bd9a913da4
         ports:
         - containerPort: 3003
         env:

@@ -20,9 +20,9 @@ func (app *application) handleActivationTokenMail(w http.ResponseWriter, r *http
 
 	v := validator.New()
 
-	v.Check(input.Token != "", "token", "Must be provided")
-	v.Check(input.Recipient != "", "recipient", "Must not be empty")
-	v.Check(validator.Matches(input.Recipient, validator.EmailRX), "recipient", "Must be valid email address")
+	v.Check(input.Token != "", "token", "Password token must be provided")
+	v.Check(input.Recipient != "", "recipient", "Message recipient must not be empty")
+	v.Check(validator.Matches(input.Recipient, validator.EmailRX), "recipient", "Recipient must be a valid email address")
 
 	if !v.Valid() {
 		app.httpErrors.FailedValidationResponse(w, r, v.Errors)

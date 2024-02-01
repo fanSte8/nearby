@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: mailer-container
-        image: 721145219880.dkr.ecr.eu-central-1.amazonaws.com/nearby-mailer:c930bf2f25274026346402c602106ab482c3fdd2
+        image: 721145219880.dkr.ecr.eu-central-1.amazonaws.com/nearby-mailer:bb3f4fa354d0a91f17a82c4458689087330c3408
         ports:
         - containerPort: 3003
         env:

@@ -56,9 +56,9 @@ func (app *application) handlePasswordResetTokenMail(w http.ResponseWriter, r *h
 
 	v := validator.New()
 
-	v.Check(input.Token != "", "token", "Must be provided")
-	v.Check(input.Recipient != "", "recipient", "Must not be empty")
-	v.Check(validator.Matches(input.Recipient, validator.EmailRX), "recipient", "Must be valid email address")
+	v.Check(input.Token != "", "token", "Password reset token must be provided")
+	v.Check(input.Recipient != "", "recipient", "Recipient must not be empty")
+	v.Check(validator.Matches(input.Recipient, validator.EmailRX), "recipient", "Recipient must be valid email address")
 
 	if !v.Valid() {
 		app.httpErrors.FailedValidationResponse(w, r, v.Errors)

@@ -9,12 +9,6 @@ WORKDIR /app/posts
 
 RUN GOOS=linux go build -o=./build ./cmd/api
 
-FROM golang:alpine
-
-WORKDIR /app
-
-COPY --from=build /app/posts/build ./build
-
 EXPOSE 3000
 
 CMD ["./build"]

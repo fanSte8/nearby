@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: posts-container
-        image: 721145219880.dkr.ecr.eu-central-1.amazonaws.com/nearby-posts:bfa1225ea19522d0dff058ae3c8bc54f1343651b
+        image: 721145219880.dkr.ecr.eu-central-1.amazonaws.com/nearby-posts:7bf7e308378c8043325cc6fc34979ce222e6f072
         ports:
         - containerPort: 3001
         env:

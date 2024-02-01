@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native'
+import { LogBox, StyleSheet } from 'react-native'
 import {
   AccountScreen,
   ActivateScreen,
@@ -15,6 +15,8 @@ import {
   ResetPasswordScreen
 } from './screens'
 import * as Location from 'expo-location'  
+
+LogBox.ignoreAllLogs(true)
 
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'

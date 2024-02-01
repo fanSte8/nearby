@@ -101,8 +101,9 @@ export const HomeScreen = ({ navigation, route }: any) => {
             open={dropdownOpen}
             setOpen={setDropdownOpen}
             value={sortBy}
-            setValue={setSortBy}
             multiple={false}
+            onSelectItem={item => setSortBy(item.value!)}
+            setValue={setSortBy}
             style={{
               borderWidth: 0,
               backgroundColor: PRIMARY_COLOR,

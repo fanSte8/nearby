@@ -9,7 +9,7 @@ WORKDIR /app/mailer
 
 RUN GOOS=linux go build -o=./build ./cmd/api
 
-FROM ubuntu:latest
+FROM alpine:latest
 
 WORKDIR /app
 

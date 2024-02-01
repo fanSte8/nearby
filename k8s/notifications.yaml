@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: notifications-container
-        image: 721145219880.dkr.ecr.eu-central-1.amazonaws.com/nearby-notifications:7bf7e308378c8043325cc6fc34979ce222e6f072
+        image: 721145219880.dkr.ecr.eu-central-1.amazonaws.com/nearby-notifications:c930bf2f25274026346402c602106ab482c3fdd2
         ports:
         - containerPort: 3002
         env:

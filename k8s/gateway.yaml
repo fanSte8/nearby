@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: gateway-container
-        image: 721145219880.dkr.ecr.eu-central-1.amazonaws.com/nearby-gateway:3f153b6f4514c7003e63f9820b21ca514be18ce0
+        image: 721145219880.dkr.ecr.eu-central-1.amazonaws.com/nearby-gateway:3ff7b0d6825bb1dadaa310a83b8b0a6d7b6ed083
         ports:
         - containerPort: 3004
         env:

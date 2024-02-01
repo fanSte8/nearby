@@ -9,13 +9,11 @@ WORKDIR /app/mailer
 
 RUN GOOS=linux go build -o=./build ./cmd/api
 
-FROM ubuntu:latest
+FROM golang:alpine
 
 WORKDIR /app
 
 COPY --from=build /app/mailer/build ./build
-
-COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 EXPOSE 3000
 

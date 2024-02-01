@@ -18,6 +18,8 @@ import * as Location from 'expo-location'
 
 LogBox.ignoreAllLogs(true)
 
+console.error = () => {}
+
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { useUserStore } from './storage/useUserStorage'

@@ -19,30 +19,18 @@ spec:
         - containerPort: 3003
         env:
           - name: SMTP_HOST
-            valueFrom:
-              secretKeyRef:
-                name: secrets
-                key: nearby-smtp-host
+            value: "smtp.gmail.com"
           - name: SMTP_PORT
-            valueFrom:
-              secretKeyRef:
-                name: secrets
-                key: nearby-smtp-port
+            value: "587"
           - name: SMTP_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: secrets
-                key: nearby-smtp-username
+            value: "dev.nearby.app@gmail.com"
           - name: SMTP_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: secrets
                 key: nearby-smtp-password
           - name: SMTP_SENDER
-            valueFrom:
-              secretKeyRef:
-                name: secrets
-                key: nearby-smtp-sender
+            value: "Nearby<dev.nearby.app@gmail.com>"
 ---
 apiVersion: v1
 kind: Service

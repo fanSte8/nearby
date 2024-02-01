@@ -9,7 +9,7 @@ WORKDIR /app/notifications
 
 RUN GOOS=linux go build -o=./build ./cmd/api
 
-FROM centos:latest
+FROM ubuntu:latest
 
 WORKDIR /app
 

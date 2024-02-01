@@ -9,7 +9,7 @@ WORKDIR /app/posts
 
 RUN GOOS=linux go build -o=./build ./cmd/api
 
-FROM alpine:latest
+FROM centos:latest
 
 WORKDIR /app
 

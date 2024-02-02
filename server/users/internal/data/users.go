@@ -152,6 +152,8 @@ func (m UserModel) GetById(id int64) (*User, error) {
 		}
 	}
 
+	user.FirstName = "ABC"
+
 	return &user, nil
 }
 

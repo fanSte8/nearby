@@ -35,31 +35,27 @@ export const HomeScreen = ({ navigation, route }: any) => {
   const flatListRef = useRef<any>(null)
 
   const resetScreen = useCallback(() => {
-    (async () => {
-      setPage(1)
-      setHasMorePosts(true)
-      reset()
-      if (flatListRef.current) {
-        flatListRef.current.scrollToOffset({ offset: 0, animated: true })
-      }
-      await fetchPosts(1)
-      
-      const hasNotifications = await hasUnseenNotifications()
-      setHasNewNotifications(hasNotifications)
-    })()
-  }, [])
+    setPage(1)
+    setHasMorePosts(true)
+    reset()
+    if (flatListRef.current) {
+      flatListRef.current.scrollToOffset({ offset: 0, animated: true })
+    }
+    hasUnseenNotifications().then(setHasNewNotifications)
+    fetchPosts(1, true)
+  }, [sortBy])
 
   useFocusEffect(resetScreen)
 
   useEffect(() => {
-    (async () => { 
+    (async () => {
       await resetScreen()
     })()
   }, [sortBy])
 
 
-  const fetchPosts = async (nextPage = page) => {
-    if (!hasMorePosts || isLoadingPosts) {
+  const fetchPosts = async (nextPage = page, force = false) => {
+    if ((!hasMorePosts || isLoadingPosts) && !force) {
       return
     }
 
@@ -102,7 +98,6 @@ export const HomeScreen = ({ navigation, route }: any) => {
             setOpen={setDropdownOpen}
             value={sortBy}
             setValue={setSortBy}
-            multiple={false}
             style={{
               borderWidth: 0,
               backgroundColor: PRIMARY_COLOR,

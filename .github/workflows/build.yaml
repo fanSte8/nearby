@@ -55,7 +55,7 @@ jobs:
       - name: Update Kubernetes deployment
         run: |
           for service in users posts notifications mailer gateway; do
-            IMAGE_NAME=${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}-$service:${{ github.sha }}
+            IMAGE_NAME=721145219880.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}-$service:${{ github.sha }}
             sed -i "s|image:.*|image: $IMAGE_NAME|" ./k8s/$service.yaml
           done
 

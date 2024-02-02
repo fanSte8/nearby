@@ -21,10 +21,17 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.stefanmitov.nearbyapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "326c45cd-6b1c-4cc8-a52e-481f08e48cee"
+      }
+    },
+    "owner": "stefanmitov"
   }
 }

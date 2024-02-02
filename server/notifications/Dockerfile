@@ -9,12 +9,6 @@ WORKDIR /app/notifications
 
 RUN GOOS=linux go build -o=./build ./cmd/api
 
-FROM ubuntu:latest
-
-WORKDIR /app
-
-COPY --from=build /app/notifications/build ./build
-
 EXPOSE 3000
 
 CMD ["./build"]

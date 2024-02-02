@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - 'users/**'
-      - 'posts/**'
-      - 'notifications/**'
-      - 'mailer/**'
+      - 'server/users/**'
+      - 'server/posts/**'
+      - 'server/notifications/**'
+      - 'server/mailer/**'
     branches:
       - dev
 
